@@ -6,44 +6,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "core/events/KeyEvent.h"
-#include "core/inputs/inputs.h"
-#include "core/layers/EventBus.h"
-
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    Lypo::EventBus& bus = Lypo::EventBus::getInstance();
-    std::cout << "--------key_callback----------" << std::endl;
-    std::cout   << "Key: "      << key << std::endl
-                << "Scancode: " << scancode << std::endl
-                << "Action: "   << action << std::endl
-                << "Mods: "     << mods << std::endl;
-
-    switch (action)
-    {
-        case GLFW_PRESS:
-        {
-            Lypo::KeyPressedEvent event(key, false);
-            bus.dispatch(&event);
-            break;
-        }
-        case GLFW_RELEASE:
-        {
-            Lypo::KeyReleasedEvent event(key);
-            bus.dispatch(&event);
-            break;
-        }
-        case GLFW_REPEAT:
-        {
-            Lypo::KeyPressedEvent event(key, true);
-            bus.dispatch(&event);
-            break;
-        }
-        default:
-            break;
-    }
-}
+#include "core/events/key_event.h"
+#include "core/inputs/glfw_input_manager.h"
+#include "../../core/events/event_bus.h"
 
 int main(void)
 {
@@ -70,12 +35,11 @@ int main(void)
     eventHandler1_1->addChild(eventHandler1_2_1);
     eventHandler1_1->addChild(eventHandler1_2_2);
 
+    bus.addEventListener(eventHandler1);
+
     eventHandler1->addChild(eventHandler1_1);
     eventHandler1->addChild(eventHandler1_2);
     eventHandler1->addChild(eventHandler1_3);
-
-    bus.addEventListener(eventHandler1);
-
 
     /* Initialize the library */
     if (!glfwInit())
@@ -89,12 +53,8 @@ int main(void)
         return -1;
     }
 
-
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-
-    /* Creates InputManager */
-    InputManager im = InputManager(window);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
@@ -102,8 +62,10 @@ int main(void)
         return -1;
     }
 
+    /* Creates InputManager */
+    auto im = Lypo::GlfwInputManager(window);
     /* Set the key callback */
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, *im.key_callback);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -118,7 +80,7 @@ int main(void)
         glfwPollEvents();
 
         /* Simple test to query if a specific key is pressed */
-        std::cout << im.isKeyPressed(68) << std::endl;
+        // std::cout << im.isKeyPressed(68) << std::endl;
     }
 
     glfwTerminate();

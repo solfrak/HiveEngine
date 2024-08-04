@@ -4,7 +4,7 @@
 
 #ifndef KEYEVENT_H
 #define KEYEVENT_H
-#include "Event.h"
+#include "event.h"
 
 #define KeyCode int
 

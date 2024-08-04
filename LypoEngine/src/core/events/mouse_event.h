@@ -4,7 +4,7 @@
 
 #ifndef MOUSEEVENT_H
 #define MOUSEEVENT_H
-#include "Event.h"
+#include "event.h"
 
 #define MouseCode int
 

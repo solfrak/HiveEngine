@@ -56,18 +56,15 @@ namespace Lypo {
     class IEventHandler
     {
     public:
-        virtual void OnEvent(Event& event) = 0;
+        virtual void onEvent(Event* event) = 0;
+        virtual void addChild(IEventHandler* child);
 
-        void addChild(IEventHandler* child) {
-            children.push_back(child);
-        }
+        std::vector<IEventHandler*> getChildren() { return children; }
 
-        std::vector<IEventHandler*> getChildren()
-        {
-            return children;
-        }
+    protected:
+        virtual void updateBfsPath();
 
-    private:
+        IEventHandler* parent = nullptr;
         std::vector<IEventHandler*> children;
     };
 }

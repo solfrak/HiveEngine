@@ -22,16 +22,6 @@ else()
     message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
 endif ()
 
-add_executable(lypo_engine ${CORE_SOURCES} ${PLATFORM_SOURCES}
-        LypoEngine/src/core/events/Event.h
-        LypoEngine/src/core/events/KeyEvent.h
-        LypoEngine/src/core/events/WindowEvent.h
-        LypoEngine/src/core/events/MouseEvent.h
-        LypoEngine/src/core/layers/Tree.cpp
-        LypoEngine/src/core/layers/Tree.h
-        LypoEngine/src/core/layers/EventBus.cpp
-        LypoEngine/src/core/layers/EventBus.h
-        LypoEngine/src/core/inputs/inputs.h
-)
+add_executable(lypo_engine ${CORE_SOURCES} ${PLATFORM_SOURCES})
 
 target_link_libraries(lypo_engine glfw glad)

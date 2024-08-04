@@ -6,7 +6,7 @@
 #define TREE_H
 #include <iostream>
 
-#include "core/events/Event.h"
+#include "event.h"
 
 namespace Lypo {
     class RealNode : public IEventHandler
@@ -15,13 +15,7 @@ namespace Lypo {
         explicit RealNode(const int value)
             : value_(value) {}
 
-        void OnEvent(Event &event) override
-        {
-            // std::cout << "Event " << value_ << std::endl;
-
-            if(value_ == 111)
-                event.handled = true;
-        };
+        void onEvent(Event* event) override { std::cout << value_ << std::endl; }
     private:
         int value_;
     };
