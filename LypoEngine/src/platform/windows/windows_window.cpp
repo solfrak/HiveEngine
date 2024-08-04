@@ -60,7 +60,7 @@ namespace platform
             /* Creates InputManager */
             auto im = Lypo::GlfwInputManager(window_);
             /* Set the key callback */
-            glfwSetKeyCallback(window_, *im.key_callback);
+            glfwSetKeyCallback(window_, im.key_callback);
 
             glfwSetWindowUserPointer(window_, &data_);
             setVSync(true);

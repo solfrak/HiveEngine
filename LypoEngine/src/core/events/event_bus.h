@@ -6,7 +6,7 @@
 #define EVENTBUS_H
 #include <queue>
 
-#include "tree.h"
+#include "real_node_example.h"
 #include "event.h"
 
 namespace Lypo {
