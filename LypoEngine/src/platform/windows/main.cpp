@@ -59,18 +59,13 @@ int main(void)
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    // glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
         std::cout << "Error in glad load" << std::endl;
         return -1;
     }
-
-    /* Creates InputManager */
-    auto im = Lypo::GlfwInputManager(window);
-    /* Set the key callback */
-    glfwSetKeyCallback(window, *im.key_callback);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
