@@ -3,6 +3,8 @@
 //
 #include "linux_window.h"
 
+#include "core/inputs/glfw_input_manager.h"
+
 namespace platform
 {
         LinuxWindow::LinuxWindow(const std::string& title, const uint32_t& width, const uint32_t& height, const core::WindowFlags& flag) noexcept : LinuxWindow(core::WindowProperties(title, width, height, flag)) {}
