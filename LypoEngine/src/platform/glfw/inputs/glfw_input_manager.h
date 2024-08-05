@@ -6,7 +6,7 @@
 #define INPUTS_H
 #include "core/inputs/input_manager.h"
 
-#include <glad/glad.h>
+#include <glad/glad.h> // Needed for GLFW/glfw3.h
 #include <GLFW/glfw3.h>
 
 namespace Lypo {
