@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "core/events/key_event.h"
-#include "core/inputs/glfw_input_manager.h"
 #include "../../core/events/event_bus.h"
 #include "windows_window.h"
 #include "platform/opengl/opengl_shader.h"

@@ -3,7 +3,7 @@
 //
 #include "linux_window.h"
 
-#include "core/inputs/glfw_input_manager.h"
+#include "platform/glfw/inputs/glfw_input_manager.h"
 
 namespace platform
 {
