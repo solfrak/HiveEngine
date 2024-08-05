@@ -5,7 +5,7 @@
 #ifndef INPUTS_H
 #define INPUTS_H
 #include "core/inputs/input_manager.h"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 namespace Lypo {
     class GlfwInputManager : public InputManager {
