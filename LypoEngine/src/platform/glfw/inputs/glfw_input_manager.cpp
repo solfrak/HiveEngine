@@ -19,6 +19,19 @@ namespace hive {
         return glfwGetKey(window_, key) == GLFW_RELEASE;
     }
 
+    bool GlfwInputManager::isKeyPressed(const int key) {
+
+        const bool pressed = isKeyDown(key) && !keyPressState[key];
+        keyPressState[key] = isKeyDown(key);
+        return pressed;
+    }
+
+    bool GlfwInputManager::isKeyReleased(const int key) {
+        const bool released = isKeyUp(key) && !keyReleaseState[key];
+        keyReleaseState[key] = isKeyUp(key);
+        return released;
+    }
+
     // Mouse inputs
     bool GlfwInputManager::isMouseButtonDown(int button) const
     {
@@ -55,12 +68,6 @@ namespace hive {
     void GlfwInputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         hive::EventBus& bus = hive::EventBus::getInstance();
-        std::cout << "--------key_callback----------" << std::endl;
-        std::cout   << "Key: "      << key << std::endl
-                    << "Scancode: " << scancode << std::endl
-                    << "Action: "   << action << std::endl
-                    << "Mods: "     << mods << std::endl;
-
         switch (action)
         {
             case GLFW_PRESS:
