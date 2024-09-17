@@ -19,6 +19,7 @@
 #include "core/rendering/Texture.h"
 #include "core/rendering/shader.h"
 #include "core/rendering/Renderer.hpp"
+#include "core/rendering/orthographic_camera.h"
 
 #include "core/events/event_bus.h"
 
@@ -46,6 +47,8 @@ int main(void)
 
     /*unsigned int shaderProgram = createBasicShader();
     unsigned int textureShader = createTextureShader();*/
+
+    hive::OrthographicCamera m_Camera(-1.0f, 1.0f, -1.0f, 1.0f);
 
     std::string fragmentPath = "../HiveEngine/assets/shaders/basicColorShader.frag.glsl";
     std::string vertexPath = "../HiveEngine/assets/shaders/basicColorShader.vert.glsl";
@@ -108,11 +111,17 @@ int main(void)
     textureShader->bind();
     textureShader->uploadUniformInt("u_Texture", 0);
 
+    float angle = 0.0f;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(reinterpret_cast<GLFWwindow*>(window->getNativeWindow())))
     {
+        angle += 0.5f;
 
-        hive::Renderer::beginScene();
+        m_Camera.setPosition({ 0.5f, 0.0f, 0.0f });
+        m_Camera.setRotation(angle);
+
+        hive::Renderer::beginScene(m_Camera);
 
         m_Texture->bind();
         hive::Renderer::submitGeometryToDraw(squareVA, textureShader);
@@ -127,7 +136,6 @@ int main(void)
         /* Poll for and process events */
         double xpos, ypos;
         mouse->getPosition(xpos, ypos);
-        // std::cout << "Mouse Position (" << xpos << ", " << ypos << ")" << std::endl;
 
         if (mouse->isButtonPressed(hive::ButtonValue::BUTTON_RIGHT))
         {
@@ -138,119 +146,3 @@ int main(void)
     return 0;
 }
 
-unsigned int createBasicShader()
-{
-    // Shader creation for test
-    const char *vertexShaderSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
-			}
-		)";
-
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    const char *fragmentShaderSource = R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = vec4(v_Position * 0.5 + 0.5, 1.0);
-				color = v_Color;
-			}
-		)";
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glUseProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return shaderProgram;
-}
-
-unsigned int createTextureShader()
-{
-    // Shader creation for test
-    const char *vertexShaderSource = R"(
-			#version 330 core
-
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			out vec2 v_TexCoord;
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = vec4(a_Position, 1.0);
-			}
-		)";
-
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    const char *fragmentShaderSource =  R"(
-			#version 330 core
-
-			layout(location = 0) out vec4 color;
-			in vec2 v_TexCoord;
-
-			uniform sampler2D u_Texture;
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glUseProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return shaderProgram;
-}
