@@ -30,6 +30,11 @@
 #include "core/logging/Logger.h"
 #include "core/logging/LoggingFactory.h"
 
+#include "scene/components.h"
+#include "scene/entity.h"
+
+#include "scene/scene.h"
+
 unsigned int createBasicShader();
 unsigned int createTextureShader();
 
@@ -115,9 +120,19 @@ int main(void)
 
     textureShader->bind();
     textureShader->uploadUniformInt("u_Texture", 0);
-
+  
+    // TEST ECS
+	  hive::Scene scene = {};
+	  hive::Entity entity = scene.createEntity("Test");
+	  hive::Entity entity_no_name = scene.createEntity();
+	  std::cout << entity << std::endl;
+	  std::cout << entity_no_name << std::endl;
+	  auto& tag = entity_no_name.replaceComponent<hive::TagComponent>();
+	  tag.Tag = "Replace";
+	  std::cout << entity_no_name << std::endl;
+  
     float angle = 0.0f;
-
+  
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(reinterpret_cast<GLFWwindow*>(window->getNativeWindow())))
     {
