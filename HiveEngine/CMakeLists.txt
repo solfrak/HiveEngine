@@ -11,14 +11,6 @@ if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
     add_library(HiveEngine SHARED ${SOURCES})
 
-#    This line is used to set the visibility of the API
-    target_compile_definitions(HiveEngine PUBLIC HIVE_EXPORT)
-
-
-    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        target_compile_options(HiveEngine PRIVATE -fvisibility=hidden)
-    endif()
-
 #    Dependencies
     add_subdirectory(dep/raylib)
     add_library(stb_image STATIC dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
