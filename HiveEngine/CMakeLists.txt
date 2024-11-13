@@ -3,42 +3,40 @@ set(CMAKE_CXX_STANDARD 20)
 #include_directories(src)
 #
 #Dependencies
-add_subdirectory(dep/entt)
 
-add_subdirectory(dep/easy_profiler)
-set(EASY_PROFILER_NO_GUI ON)
-set(EASY_PROFILER_NO_SAMPLES ON)
-add_compile_definitions(BUILD_WITH_EASY_PROFILER)
+#You can just comment out this if you don't want to work with raylib
+set(BACKEND raylib)
 
-add_subdirectory(dep/raylib)
+if(BACKEND STREQUAL "raylib")
+    file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
+    add_library(HiveEngine SHARED ${SOURCES})
 
-add_library(stb_image dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
+#    This line is used to set the visibility of the API
+    target_compile_definitions(HiveEngine PUBLIC HIVE_EXPORT)
 
-#Source file
-file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
-add_compile_definitions(HIVE_BACKEND_RAYLIB)
 
-#Platform Specific
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    add_compile_definitions(HIVE_PLATFORM_WINDOWS)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_compile_definitions(HIVE_PLATFORM_LINUX)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
-else()
-    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
+    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        target_compile_options(HiveEngine PRIVATE -fvisibility=hidden)
+    endif()
+
+#    Dependencies
+    add_subdirectory(dep/raylib)
+    add_library(stb_image STATIC dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
+    target_link_libraries(HiveEngine stb_image raylib)
+
+
+#    Include directories
+    target_include_directories(HiveEngine PRIVATE src)
+    target_include_directories(HiveEngine PRIVATE dep/raylib/src)
+    target_include_directories(HiveEngine PRIVATE dep/entt/src)
+    target_include_directories(HiveEngine PRIVATE dep/easy_profiler/easy_profiler_core)
+
+#    Precompiled header
+    target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)
+else ()
+    message("Unsupported backend")
 endif ()
 
-#Library
-add_library(HiveEngine ${SOURCES})
-target_link_libraries(HiveEngine EnTT easy_profiler stb_image raylib)
-target_include_directories(HiveEngine PRIVATE src)
 
-#Include Directory
-target_include_directories(HiveEngine PRIVATE dep/raylib/src)
-target_include_directories(HiveEngine PRIVATE dep/entt/src)
-target_include_directories(HiveEngine PRIVATE dep/easy_profiler/easy_profiler_core)
 
-#Precompiled header
-target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)
 

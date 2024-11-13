@@ -10,9 +10,30 @@
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
-#include <core/logging/Logger.h>
-#include <core/Profiling/profiler.h>
-#include <core/Profiling/profiler_colors.h>
+
+//Platform detection
+#if defined(__linux__)
+#define HIVE_PLATFORM_LINUX
+#elif defined(_WIN32)
+#define HIVE_PLATFORM_WINDOWS
+#else
+#error "Unsupported platform"
+#endif
+
+//Symbol visibility
+#ifdef HIVE_EXPORT
+#ifdef _MSC_VER
+#define HAPI __declspec(dllexport)
+#else
+#endif
+#define HAPI __attribute__((visibility("default")))
+#else
+#ifdef _MSC_VER
+#define HAPI __declspec(dllimport)
+#else
+#define HAPI
+#endif
+#endif
 
 template<typename T>
 using URef = std::unique_ptr<T>;

@@ -2,7 +2,7 @@
 // Created by guill on 2024-09-27.
 //
 
-#ifndef PROFILER_H
+#ifdef PROFILER_H
 #define PROFILER_H
 
 #include <easy/profiler.h>
