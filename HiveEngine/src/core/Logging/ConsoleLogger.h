@@ -12,7 +12,7 @@ namespace hive {
 
     class ConsoleLogger final : public Logger {
     public:
-        explicit ConsoleLogger(LogLevel level = LogLevel::Info);
+        explicit ConsoleLogger();
         ~ConsoleLogger();
 
         bool isCorrect() override;

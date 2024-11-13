@@ -5,8 +5,7 @@
 #include "ConsoleLogger.h"
 
 namespace hive {
-    ConsoleLogger::ConsoleLogger(const LogLevel level) {
-        m_logLevel = level;
+    ConsoleLogger::ConsoleLogger() {
     }
 
     ConsoleLogger::~ConsoleLogger() {
@@ -14,11 +13,9 @@ namespace hive {
     }
 
     void ConsoleLogger::logImpl(const std::string &msg, LogLevel level) {
-        if(m_logLevel <= level) {
-            setLogLevelColor(level);
-            std::cout << msg;
-            resetColor();
-        }
+        setLogLevelColor(level);
+        std::cout << msg;
+        resetColor();
     }
 
     bool ConsoleLogger::isCorrect() {

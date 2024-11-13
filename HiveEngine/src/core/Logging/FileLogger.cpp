@@ -5,11 +5,10 @@
 #include "FileLogger.h"
 
 namespace hive {
-    FileLogger::FileLogger(const std::string &filePath, const LogLevel logLevel) {
-        m_logLevel = logLevel;
-
+    FileLogger::FileLogger(const std::string &filePath) {
         m_fileStream = std::ofstream(filePath, std::ios::out | std::ios::app);
-        if (!m_fileStream.is_open()) {
+        if (!m_fileStream.is_open())
+        {
             //ERROR LOG HERE
         }
     }
@@ -19,10 +18,7 @@ namespace hive {
     }
 
     void FileLogger::logImpl(const std::string &msg, LogLevel level) {
-        if(m_logLevel <= level)
-        {
-            m_fileStream << msg << std::endl;
-        }
+        m_fileStream << msg << std::endl;
     }
 
     bool FileLogger::isCorrect() {

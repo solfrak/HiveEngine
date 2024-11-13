@@ -12,7 +12,7 @@
 namespace hive {
     class FileLogger final : public Logger {
     public:
-        explicit FileLogger(const std::string &filePath, const LogLevel logLevel);
+        explicit FileLogger(const std::string &filePath);
 
         ~FileLogger() override;
 

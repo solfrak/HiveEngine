@@ -1,24 +1,21 @@
 set(CMAKE_CXX_STANDARD 20)
 
-#include_directories(src)
-#
 #Dependencies
 
 #You can just comment out this if you don't want to work with raylib
 set(BACKEND raylib)
 
-# For linux build, will set the default visibility to hidden
+# For linux build, will set the default visibility to hidden (hidden by default on windows using MSVC)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_INLINES_HIDDEN 1)
 
 if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
-    add_library(HiveEngine SHARED ${SOURCES})
+    add_library(HiveEngine SHARED ${SOURCES} dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
 
 #    Dependencies
     add_subdirectory(dep/raylib)
-    add_library(stb_image STATIC dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
-    target_link_libraries(HiveEngine PRIVATE stb_image raylib)
+    target_link_libraries(HiveEngine PRIVATE raylib)
 
 
 #    Include directories

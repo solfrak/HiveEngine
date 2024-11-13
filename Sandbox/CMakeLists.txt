@@ -1,5 +1,5 @@
-add_executable(Demo_Empty demo_empty/main.cpp)
-target_include_directories(Demo_Empty PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
-target_link_libraries(Demo_Empty PRIVATE HiveEngine)
+add_executable(Demo_Logger demo_logging/main.cpp)
+target_include_directories(Demo_Logger PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Logger PRIVATE HiveEngine)
 
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp

@@ -3,9 +3,11 @@
 //
 
 #ifdef HIVE_PLATFORM_LINUX
+
+#include "core/Logging/ConsoleLogger.h"
 #include <cassert>
 
-#include <core/logging/ConsoleLogger.h>
+
 
 namespace hive {
 
