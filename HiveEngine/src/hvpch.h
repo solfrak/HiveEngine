@@ -20,9 +20,26 @@
 #error "Unsupported platform"
 #endif
 
-
 template<typename T>
 using URef = std::unique_ptr<T>;
 
 template<typename T>
 using SRef = std::shared_ptr<T>;
+
+
+//Visibility
+#ifdef HiveEngine_EXPORTS
+// Exports
+#ifdef _MSC_VER
+#define HAPI __declspec(dllexport)
+#else
+#define HAPI __attribute__((visibility("default")))
+#endif
+#else
+// Imports
+#ifdef _MSC_VER
+#define HAPI __declspec(dllimport)
+#else
+#define HAPI
+#endif
+#endif
