@@ -22,7 +22,6 @@ if(BACKEND STREQUAL "raylib")
     target_include_directories(HiveEngine PRIVATE src)
     target_include_directories(HiveEngine PRIVATE dep/raylib/src)
     target_include_directories(HiveEngine PRIVATE dep/entt/src)
-    target_include_directories(HiveEngine PRIVATE dep/easy_profiler/easy_profiler_core)
 
 #    Precompiled header
     target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)

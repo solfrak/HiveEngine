@@ -1,49 +1,71 @@
-//
-// Created by guill on 2024-09-27.
-//
+#pragma once
 
-#ifdef PROFILER_H
-#define PROFILER_H
-
-#include <easy/profiler.h>
+#include <hvpch.h>
+#include <chrono>
+#include <fstream>
+#include <thread>
 
 namespace hive
 {
-    #define FUNCTION_NAME __func__
-    
-    #ifndef DEFAULT_PORT
-        #define DEFAULT_PORT profiler::DEFAULT_PORT            
-    #endif 
-
-    enum BlockStatus : uint8_t 
+    struct ProfileResult
     {
-        OFF = 0,                                              // The block is OFF
-        ON  = 1,                                              // The block is ON (but if it's parent block is off recursively then this block will be off too)
-        FORCE_ON = ON | 2,                                    // The block is ALWAYS ON (even if it's parent has turned off all children)
-        OFF_RECURSIVE = 4,                                    // The block is OFF and all of it's children by call-stack are also OFF.
-        ON_WITHOUT_CHILDREN = ON | OFF_RECURSIVE,             // The block is ON but all of it's children are OFF.
-        FORCE_ON_WITHOUT_CHILDREN = FORCE_ON | OFF_RECURSIVE, // The block is ALWAYS ON but all of it's children are OFF.   
+        std::string Name;
+        long long Start, End;
+        uint32_t ThreadID;
     };
 
-    #define ENABLE_PROFILING                EASY_PROFILER_ENABLE;
+    struct InstrumentationSession
+    {
+        std::string Name;
+    };
 
-    #define DISABLE_PROFILING               EASY_PROFILER_DISABLE;
+    class HAPI Instrumentor
+    {
+    private:
+        std::ofstream m_OutputStream;
+        int m_ProfileCount;
+    public:
+        Instrumentor()
+                : m_ProfileCount(0)
+        {
+        }
 
-    #define INIT_NETWORK_PROFILING  \
-        ENABLE_PROFILING;           \
-        profiler::startListen(DEFAULT_PORT);
+        void BeginSession(const std::string& filepath = "results.json");
+        void EndSession();
 
-    #define STOP_NETWORK_PROFILING          profiler::stopListen();
+        void WriteProfile(const ProfileResult& result);
+        void WriteHeader();
+        void WriteFooter();
 
-    #define DUMP_PROFILING(filename)        profiler::dumpBlocksToFile(filename);
+        static Instrumentor& Get();
 
-    #define BLOCK_PROFILING(name, ...)      EASY_BLOCK(name, ## __VA_ARGS__)
+    };
 
-    #define FUNCTION_PROFILING(...)         BLOCK_PROFILING(FUNCTION_NAME, ## __VA_ARGS__);
+    class HAPI InstrumentationTimer
+    {
+    public:
+        InstrumentationTimer(const char* name);
 
-    #define MARKER_PROFILING(name, ...)     EASY_EVENT(name, ## __VA_ARGS__);
 
-    #define END_BLOCK_PROFILING             EASY_END_BLOCK
+        ~InstrumentationTimer();
+
+
+        void Stop();
+    private:
+        const char* m_Name;
+        std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
+        bool m_Stopped;
+    };
 }
 
-#endif //PROFILER_H
+//TODO: Add feature to profile with multiple thread or categories
+#define HPROFILE
+#ifdef HPROFILE
+#define HPROFILE_BEGIN_SESSION() hive::Instrumentor::Get().BeginSession()
+#define HPROFILE_END_SESSION() hive::Instrumentor::Get().EndSession()
+#define HPROFILE_FUNCTION() hive::InstrumentationTimer t(__PRETTY_FUNCTION__)
+#else
+#define BeginSession(x)
+#define EndSession()
+#define OL_PROFILE_FUNCTION(x)
+#endif
