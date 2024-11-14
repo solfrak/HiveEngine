@@ -6,4 +6,7 @@ add_executable(Demo_Profilling demo_profilling/main.cpp)
 target_include_directories(Demo_Profilling PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
 target_link_libraries(Demo_Profilling PRIVATE HiveEngine)
 
+add_executable(Demo_Window demo_window/main.cpp)
+target_include_directories(Demo_Window PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Window PRIVATE HiveEngine)
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp

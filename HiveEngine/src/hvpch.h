@@ -43,3 +43,5 @@ using SRef = std::shared_ptr<T>;
 #define HAPI
 #endif
 #endif
+
+#define HIVE_RAYLIB_ENABLED

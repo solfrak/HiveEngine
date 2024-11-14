@@ -2,24 +2,24 @@
 // Created by GuillaumeIsCoding on 7/26/2024.
 //
 #pragma once
-#include "window_configuration.h"
+#include "hvpch.h"
+#include "WindowConfiguration.h"
 
 
 namespace hive
 {
-
     struct WindowNativeData
     {
         void* window_handle;
         enum WindowBackend
         {
-            GLFW,
+            GLFW, RAYLIB
         };
 
         WindowBackend backend;
     };
 
-    class Window {
+    class HAPI Window {
     public:
         virtual ~Window() = default;
 

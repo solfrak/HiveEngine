@@ -9,10 +9,11 @@
 namespace hive {
     enum class WindowConfigurationOptions {
         FULLSCREEN,
-        CURSOR_DISABLED
+        CURSOR_DISABLED,
+        RESIZABLE
     };
 
-    class WindowConfiguration {
+    class HAPI WindowConfiguration {
     public:
         void set(WindowConfigurationOptions flag, bool value);
 

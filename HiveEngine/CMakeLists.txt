@@ -8,10 +8,12 @@ set(BACKEND raylib)
 # For linux build, will set the default visibility to hidden (hidden by default on windows using MSVC)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_INLINES_HIDDEN 1)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 
 if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
-    add_library(HiveEngine SHARED ${SOURCES} dep/stb_image/stb_image.cpp dep/stb_image/stb_image.h)
+    add_library(HiveEngine SHARED ${SOURCES})
 
 #    Dependencies
     add_subdirectory(dep/raylib)
