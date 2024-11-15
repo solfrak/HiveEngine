@@ -10,10 +10,12 @@ set(BACKEND raylib)
 # For linux build, will set the default visibility to hidden
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_INLINES_HIDDEN 1)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
     add_library(HiveEngine SHARED ${SOURCES})
+    target_compile_definitions(HiveEngine PRIVATE HEXPORTS)
 
 #    Dependencies
     add_subdirectory(dep/raylib)
