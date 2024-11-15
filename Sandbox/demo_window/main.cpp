@@ -12,7 +12,7 @@ int main()
 	hive::Window* window =  hive::WindowFactory::Create("HiveEngine", 800, 600, config);
 
 	//WindowManager is a singleton that make it possible to access the Window across all the application
-	hive::WindowManager::setCurrentWindow(std::shared_ptr<hive::Window>(window));
+	// hive::WindowManager::setCurrentWindow(std::shared_ptr<hive::Window>(window));
 
 	while(!window->shouldClose())
 	{
