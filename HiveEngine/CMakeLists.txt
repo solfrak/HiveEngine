@@ -14,6 +14,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
     add_library(HiveEngine SHARED ${SOURCES})
+    target_compile_definitions(HiveEngine PRIVATE HEXPORTS)
 
 #    Dependencies
     add_subdirectory(dep/raylib)

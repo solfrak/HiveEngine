@@ -28,7 +28,7 @@ using SRef = std::shared_ptr<T>;
 
 
 //Visibility
-#ifdef HiveEngine_EXPORTS
+#ifdef HEXPORTS
 // Exports
 #ifdef _MSC_VER
 #define HAPI __declspec(dllexport)
