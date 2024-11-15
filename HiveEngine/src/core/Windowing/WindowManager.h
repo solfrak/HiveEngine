@@ -5,6 +5,7 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
+#include "hvpch.h"
 
 namespace hive
 {
@@ -13,7 +14,7 @@ namespace hive
 
 namespace hive
 {
-	class WindowManager
+	class HAPI WindowManager
 	{
 
 	public:

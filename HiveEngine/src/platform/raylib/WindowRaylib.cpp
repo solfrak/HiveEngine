@@ -13,6 +13,7 @@ hive::WindowRaylib::WindowRaylib(const char* title, int width, int height, Windo
 	//TODO: Handle all config
 	if(config.has(WindowConfigurationOptions::RESIZABLE))
 		SetWindowState(FLAG_WINDOW_RESIZABLE);
+	SetTargetFPS(60);
 }
 
 hive::WindowRaylib::~WindowRaylib()

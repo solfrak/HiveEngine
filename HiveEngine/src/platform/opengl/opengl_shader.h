@@ -6,7 +6,7 @@
 #define OPENGL_SHADER_H
 #include <string>
 
-#include "core/rendering/shader.h"
+#include "core/Rendering/shader.h"
 
 
 namespace hive

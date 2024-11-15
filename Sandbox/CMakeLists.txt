@@ -9,4 +9,8 @@ target_link_libraries(Demo_Profilling PRIVATE HiveEngine)
 add_executable(Demo_Window demo_window/main.cpp)
 target_include_directories(Demo_Window PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
 target_link_libraries(Demo_Window PRIVATE HiveEngine)
+
+add_executable(Demo_Renderer3D demo_renderer3d/main.cpp)
+target_include_directories(Demo_Renderer3D PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Renderer3D PRIVATE HiveEngine)
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp

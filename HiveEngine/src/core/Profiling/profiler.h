@@ -63,9 +63,15 @@ namespace hive
 #ifdef HPROFILE
 #define HPROFILE_BEGIN_SESSION() hive::Instrumentor::Get().BeginSession()
 #define HPROFILE_END_SESSION() hive::Instrumentor::Get().EndSession()
-#define HPROFILE_FUNCTION() hive::InstrumentationTimer t(__PRETTY_FUNCTION__)
+#define HPROFILE_SCOPE(name) hive::InstrumentationTimer t(name)
+#define HPROFILE_FUNCTION() HPROFILE_SCOPE(__PRETTY_FUNCTION__)
 #else
-#define BeginSession(x)
-#define EndSession()
-#define OL_PROFILE_FUNCTION(x)
+#define HPROFILE_BEGIN_SESSION()
+#define HPROFILE_END_SESSION()
+#define HPROFILE_SCOPE(name)
+#define HPROFILE_FUNCTION()
 #endif
+
+// #define HPROFILE_START EASY_PROFILER_ENABLE
+// #define HPROFILE_END profiler::dumpBlocksToFile("test_profile.prof");
+// #define HPROFILE_FUNCTION() EASY_FUNCTION()
