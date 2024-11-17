@@ -4,7 +4,7 @@
 
 #ifdef HIVE_RAYLIB_ENABLED
 #include "Mesh.h"
-#include "core/Profiling/profiler.h"
+#include "core/Debug/Profiler.h"
 
 #include <raylib.h>
 #include <raymath.h>

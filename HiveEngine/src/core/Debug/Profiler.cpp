@@ -1,4 +1,4 @@
-#include "profiler.h"
+#include "Profiler.h"
 
 void hive::Instrumentor::BeginSession(const std::string& filepath)
 {

@@ -25,4 +25,16 @@ add_dll_copy_to_target(Demo_Window)
 add_executable(Demo_Renderer3D demo_renderer3d/main.cpp)
 target_include_directories(Demo_Renderer3D PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
 target_link_libraries(Demo_Renderer3D PRIVATE HiveEngine)
+add_dll_copy_to_target(Demo_Renderer3D)
+
+add_executable(Demo_Asserts demo_asserts/main.cpp)
+target_include_directories(Demo_Asserts PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Asserts PRIVATE HiveEngine)
+add_dll_copy_to_target(Demo_Asserts)
+
+add_executable(Demo_Memory demo_memory/main.cpp)
+target_include_directories(Demo_Memory PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Memory PRIVATE HiveEngine)
+add_dll_copy_to_target(Demo_Memory)
+
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp

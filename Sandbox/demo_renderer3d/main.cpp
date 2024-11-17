@@ -8,11 +8,11 @@
 #include "core/Windowing/WindowManager.h"
 
 #include "core/Rendering/Renderer3D.h"
-#include "core/Profiling/profiler.h"
+#include "core/Debug/Profiler.h"
 
 int main()
 {
-	// HPROFILE_BEGIN_SESSION();
+	HPROFILE_BEGIN_SESSION();
 	hive::Logger::init(hive::LoggerFactory::createLogger(hive::LogOutputType::Console));
 	hive::WindowConfiguration config;
 	config.set(hive::WindowConfigurationOptions::RESIZABLE, true);
@@ -33,7 +33,7 @@ int main()
 
 	while (!window->shouldClose())
 	{
-		// HPROFILE_SCOPE("Rendering");
+		HPROFILE_SCOPE("Rendering");
 		mesh.rotation.y += 0.5f;
 		renderer_3d.beginScene(camera);
 		// window->onUpdate();
@@ -44,5 +44,5 @@ int main()
 	renderer_3d.shutdown();
 
 	HLOG_INFO("Application terminating");
-	// HPROFILE_END_SESSION();
+	HPROFILE_END_SESSION();
 }

@@ -5,7 +5,7 @@
 #include "Renderer3D.h"
 #include "raylib.h"
 #include "Mesh.h"
-#include "core/Profiling/profiler.h"
+#include "core/Debug/Profiler.h"
 
 void hive::Renderer3D::init()
 {
