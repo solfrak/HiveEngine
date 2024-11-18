@@ -11,6 +11,7 @@ namespace hive
     struct WindowNativeData
     {
         void* window_handle;
+        size_t sizeof_ptr;
         enum WindowBackend
         {
             GLFW, RAYLIB

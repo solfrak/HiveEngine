@@ -5,6 +5,7 @@
 #include "WindowFactory.h"
 
 #include "WindowConfiguration.h"
+#include "core/Memory/Memory.h"
 
 #ifdef HIVE_RAYLIB_ENABLED
 #include "platform/raylib/WindowRaylib.h"
@@ -16,7 +17,9 @@ hive::Window *hive::WindowFactory::Create(const std::string &title, const int wi
 hive::Window* hive::WindowFactory::Create(const char* title, const int width, const int height,
                                           const WindowConfiguration configuration)
 {
-	return new WindowRaylib(title, width, height, configuration);
+	Window* ptr = static_cast<WindowRaylib*>(hmalloc(sizeof(WindowRaylib)));
+	new (ptr) WindowRaylib(title, width, height, configuration);
+	return  ptr;
 }
 
 #endif

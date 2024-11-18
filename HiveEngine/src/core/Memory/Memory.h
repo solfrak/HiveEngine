@@ -6,3 +6,4 @@
 
 HAPI void* hmalloc(size_t size);
 HAPI void hfree(size_t size, void* ptr);
+HAPI int getAllocatedMemory();

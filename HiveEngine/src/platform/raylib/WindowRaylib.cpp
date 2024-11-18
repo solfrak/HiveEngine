@@ -31,6 +31,7 @@ hive::WindowNativeData hive::WindowRaylib::getNativeWindowData() const
 	WindowNativeData windowNativeData;
 	windowNativeData.backend = WindowNativeData::RAYLIB;
 	windowNativeData.window_handle = GetWindowHandle();
+	windowNativeData.sizeof_ptr = sizeof(WindowRaylib);
 
 	return windowNativeData;
 }

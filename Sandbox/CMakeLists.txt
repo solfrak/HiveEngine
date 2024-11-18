@@ -37,4 +37,9 @@ target_include_directories(Demo_Memory PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/sr
 target_link_libraries(Demo_Memory PRIVATE HiveEngine)
 add_dll_copy_to_target(Demo_Memory)
 
+
+add_executable(Demo_Application demo_application/application.cpp)
+target_include_directories(Demo_Application PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_Application PRIVATE HiveEngine)
+add_dll_copy_to_target(Demo_Application)
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp
