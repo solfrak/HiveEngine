@@ -6,14 +6,13 @@
 #include "hvpch.h"
 #include "core/Math/MathType.h"
 #ifdef HIVE_RAYLIB_ENABLED
-#include <filesystem>
 struct Model;
 namespace hive
 {
 	class HAPI Mesh
 	{
 	public:
-		Mesh(std::filesystem::path path, std::filesystem::path texture);
+		Mesh(const char* path, const char*  texture);
 		~Mesh();
 		void draw() const;
 

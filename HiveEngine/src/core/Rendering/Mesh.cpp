@@ -10,11 +10,11 @@
 #include <raymath.h>
 
 
-hive::Mesh::Mesh(std::filesystem::path path, std::filesystem::path texture)
+hive::Mesh::Mesh(const char* path, const char* texture)
 {
 	HPROFILE_FUNCTION();
-	Model model = LoadModel(path.c_str());
-	Texture2D texture2d = LoadTexture(texture.c_str());
+	Model model = LoadModel(path);
+	Texture2D texture2d = LoadTexture(texture);
 
 	m_model = new Model(model);
 	m_model->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture2d;

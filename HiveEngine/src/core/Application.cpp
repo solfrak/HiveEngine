@@ -10,23 +10,38 @@
 #include "Windowing/Window.h"
 #include "Windowing/WindowFactory.h"
 
-hive::Application::Application()
+void (*application_init_ptr)(hive::Application&) = nullptr;
+void (*application_tick_ptr)(hive::Application&) = nullptr;
+void (*application_shutdown_ptr)(hive::Application&) = nullptr;
+void (*application_config_ptr)(hive::Application&) = nullptr;
+
+
+hive::Application::Application(void(*config)(Application&), void(*init)(Application &), void(*tick)(Application &), void(*shutdown)(Application &))
 {
+	application_config_ptr = config;
+	application_init_ptr = init;
+	application_tick_ptr = tick;
+	application_shutdown_ptr = shutdown;
+
 	Logger::init(LoggerFactory::createLogger(LogOutputType::Console));
-	application_init(*this);
+
+	application_config_ptr(*this);
+
 	WindowConfiguration window_configuration;
-	m_window = hive::WindowFactory::Create(m_config.title, m_config.width, m_config.height, window_configuration);
+	m_window = WindowFactory::Create(m_config.title, m_config.width, m_config.height, window_configuration);
+
+	application_init_ptr(*this);
 }
 
 hive::Application::~Application()
 {
-	application_shutdown(*this);
-
+	application_shutdown_ptr(*this);
 	auto window_data = m_window->getNativeWindowData();
 	hfree(window_data.sizeof_ptr, m_window);
 
-Logger::shutdown();
+	Logger::shutdown();
 }
+
 
 void hive::Application::run()
 {
@@ -38,7 +53,7 @@ void hive::Application::run()
 
 void hive::Application::tick()
 {
-	application_tick(*this);
+	application_tick_ptr(*this);
 }
 
 bool hive::Application::isRunning() const
@@ -50,3 +65,4 @@ void hive::Application::setConfig(const ApplicationConfig& config)
 {
 	m_config = config;
 }
+

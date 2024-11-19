@@ -59,12 +59,18 @@ namespace hive
 }
 
 //TODO: Add feature to profile with multiple thread or categories
+#ifdef _MSC_VER
+#define FUNCTION_NAME __func__
+#else
+#define FUNCTION_NAME __PRETTY_FUNCTION__
+#endif
+
 #define HPROFILE
 #ifdef HPROFILE
 #define HPROFILE_BEGIN_SESSION() hive::Instrumentor::Get().BeginSession()
 #define HPROFILE_END_SESSION() hive::Instrumentor::Get().EndSession()
 #define HPROFILE_SCOPE(name) hive::InstrumentationTimer t(name)
-#define HPROFILE_FUNCTION() HPROFILE_SCOPE(__PRETTY_FUNCTION__)
+#define HPROFILE_FUNCTION() HPROFILE_SCOPE(FUNCTION_NAME)
 #else
 #define HPROFILE_BEGIN_SESSION()
 #define HPROFILE_END_SESSION()

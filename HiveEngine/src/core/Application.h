@@ -16,7 +16,7 @@ namespace hive
 	class HAPI Application
 	{
 	public:
-		Application();
+		Application(void(*config)(Application&), void(*init)(Application&), void(*tick)(Application&), void(*shutdown)(Application&));
 		~Application();
 
 		void run();
@@ -29,19 +29,9 @@ namespace hive
 		ApplicationConfig m_config;
 		Window* m_window;
 
+
+
 	};
 
 }
 
-
-//Need to be implemented by the user
-void application_init(hive::Application& app);
-void application_tick(hive::Application& app);
-void application_shutdown(hive::Application& app);
-
-
-int main(int agrc, char ** argv)
-{
-	hive::Application app;
-	app.run();
-}
