@@ -4,9 +4,11 @@
 #include "core/Application.h"
 #include "core/Logging/Logger.h"
 #include "core/Rendering/Renderer3D.h"
+#include "core/Rendering/Renderer2D.h"
 
 hive::Renderer3D renderer_3d;
-hive::Camera camera;
+hive::Renderer2D renderer_2d;
+hive::Camera3D camera;
 hive::Mesh *mesh;
 
 void application_config(hive::Application& app)
@@ -19,6 +21,7 @@ void application_config(hive::Application& app)
 void application_init(hive::Application& app)
 {
 	renderer_3d.init();
+	renderer_2d.init();
 	camera.position = {20, 20, 20};
 	camera.target = {0, 8, 0};
 	camera.up = {0, 1.6, 0};
@@ -35,6 +38,12 @@ void application_tick(hive::Application& app)
 	renderer_3d.beginScene(camera);
 	renderer_3d.drawMesh(*mesh);
 	renderer_3d.endScene();
+
+	renderer_2d.beginScene();
+	{
+		renderer_2d.drawFPS();
+	}
+	renderer_2d.endScene();
 }
 
 void application_shutdown(hive::Application& app)

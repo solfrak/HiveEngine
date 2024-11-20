@@ -43,8 +43,8 @@ int hive::WindowRaylib::getWidth() const
 
 void hive::WindowRaylib::onUpdate() const
 {
-	BeginDrawing();
-	EndDrawing();
+	// BeginDrawing();
+	// EndDrawing();
 }
 
 void hive::WindowRaylib::setIcon(unsigned char* data, int width, int height) const

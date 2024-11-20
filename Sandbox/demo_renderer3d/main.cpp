@@ -23,7 +23,7 @@ int main()
 	hive::Renderer3D renderer_3d;
 	renderer_3d.init();
 
-	hive::Camera camera;
+	hive::Camera3D camera;
 	camera.position = {20, 20, 20};
 	camera.target = {0, 8, 0};
 	camera.up = {0, 1.6, 0};

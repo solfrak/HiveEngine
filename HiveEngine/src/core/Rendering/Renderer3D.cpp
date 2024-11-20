@@ -2,6 +2,7 @@
 // Created by samuel on 11/14/24.
 //
 
+#ifdef HIVE_RAYLIB_ENABLED
 #include "Renderer3D.h"
 #include "raylib.h"
 #include "Mesh.h"
@@ -15,10 +16,9 @@ void hive::Renderer3D::shutdown()
 {
 }
 
-void hive::Renderer3D::beginScene(Camera cam)
+void hive::Renderer3D::beginScene(Camera3D cam)
 {
 	HPROFILE_FUNCTION();
-	BeginDrawing();
 	ClearBackground(BLACK);
 	::Camera temp_cam;
 	temp_cam.position = {cam.position.x, cam.position.y, cam.position.z};
@@ -33,7 +33,6 @@ void hive::Renderer3D::beginScene(Camera cam)
 void hive::Renderer3D::endScene()
 {
 	EndMode3D();
-	EndDrawing();
 }
 
 void hive::Renderer3D::drawMesh(const hive::Mesh& mesh)
@@ -41,3 +40,4 @@ void hive::Renderer3D::drawMesh(const hive::Mesh& mesh)
 	HPROFILE_FUNCTION();
 	mesh.draw();
 }
+#endif

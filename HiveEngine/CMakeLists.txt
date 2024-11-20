@@ -31,6 +31,14 @@ if(BACKEND STREQUAL "raylib")
 
 #    Precompiled header
     target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)
+
+    install(TARGETS HiveEngine
+            EXPORT HiveEngineExport
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            RUNTIME)
+
+    install(DIRECTORY src/ DESTINATION include/hiveengine FILES_MATCHING PATTERN "*.h")
 else ()
     message("Unsupported backend")
 endif ()

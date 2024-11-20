@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "Camera.h"
+#include "Camera3D.h"
 #include "hvpch.h"
 #include "Mesh.h"
 
@@ -16,10 +16,11 @@ namespace hive
 		void shutdown();
 
 		//TODO: add Camera parameter
-		void beginScene(Camera cam);
+		void beginScene(Camera3D cam);
 		void endScene();
 
 		void drawMesh(const Mesh& mesh);
+
 
 	private:
 	};

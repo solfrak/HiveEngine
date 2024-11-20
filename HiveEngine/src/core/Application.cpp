@@ -3,6 +3,7 @@
 //
 #include "Application.h"
 
+#include "raylib.h"
 #include "Debug/Asserts.h"
 #include "Logging/Logger.h"
 #include "Logging/LoggerFactory.h"
@@ -30,12 +31,19 @@ hive::Application::Application(void(*config)(Application&), void(*init)(Applicat
 	WindowConfiguration window_configuration;
 	m_window = WindowFactory::Create(m_config.title, m_config.width, m_config.height, window_configuration);
 
+	m_renderer2D.init();
+	m_renderer3D.init();
+
 	application_init_ptr(*this);
 }
 
 hive::Application::~Application()
 {
 	application_shutdown_ptr(*this);
+
+	m_renderer3D.shutdown();
+	m_renderer2D.shutdown();
+
 	auto window_data = m_window->getNativeWindowData();
 	hfree(window_data.sizeof_ptr, m_window);
 
@@ -47,7 +55,9 @@ void hive::Application::run()
 {
 	while(isRunning() && !m_window->shouldClose())
 	{
+		BeginDrawing();
 		tick();
+		EndDrawing();
 	}
 }
 

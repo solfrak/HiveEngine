@@ -9,7 +9,7 @@
 namespace hive
 {
 
-	class HAPI Camera
+	class HAPI Camera3D
 	{
 	public:
 		//Position

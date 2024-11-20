@@ -3,6 +3,8 @@
 //
 #pragma once
 #include "hvpch.h"
+#include "Rendering/Renderer3D.h"
+#include "Rendering/Renderer2D.h"
 
 namespace hive
 {
@@ -23,6 +25,10 @@ namespace hive
 		void tick();
 		bool isRunning() const;
 		void setConfig(const ApplicationConfig& config);
+
+	public:
+		Renderer2D m_renderer2D;
+		Renderer3D m_renderer3D;
 
 	private:
 		bool terminated = false;
