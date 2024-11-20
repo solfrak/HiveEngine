@@ -15,12 +15,12 @@ void hive::Renderer2D::shutdown()
 
 void hive::Renderer2D::beginScene()
 {
-	BeginDrawing();
+	// BeginDrawing();
 }
 
 void hive::Renderer2D::endScene()
 {
-	EndDrawing();
+	// EndDrawing();
 }
 
 void hive::Renderer2D::drawRectangle(Rectangle rect, ColorRGBA color)

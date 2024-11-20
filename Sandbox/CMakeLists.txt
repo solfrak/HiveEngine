@@ -42,4 +42,9 @@ add_executable(Demo_Application demo_application/application.cpp)
 target_include_directories(Demo_Application PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
 target_link_libraries(Demo_Application PRIVATE HiveEngine)
 add_dll_copy_to_target(Demo_Application)
+
+add_executable(Demo_StackAllocator demo_stack_allocator/main.cpp)
+target_include_directories(Demo_StackAllocator PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_link_libraries(Demo_StackAllocator PRIVATE HiveEngine)
+add_dll_copy_to_target(Demo_StackAllocator)
 #Copy paste what is above for a new demo, just adjust the name and the path of the main.cpp
