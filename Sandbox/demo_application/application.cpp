@@ -1,10 +1,10 @@
 //
 // Created by samuel on 11/17/24.
 //
-#include "core/Application.h"
-#include "core/Logging/Logger.h"
-#include "core/Rendering/Renderer3D.h"
-#include "core/Rendering/Renderer2D.h"
+#include <Engine/Application.h>
+#include <Engine/Logger.h>
+#include <Rendering/Renderer2D.h>
+#include <Rendering/Renderer3D.h>
 
 hive::Renderer3D renderer_3d;
 hive::Renderer2D renderer_2d;

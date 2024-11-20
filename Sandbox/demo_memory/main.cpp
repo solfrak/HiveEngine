@@ -1,10 +1,10 @@
 //
 // Created by samuel on 11/17/24.
 //
-#include <core/Logging/Logger.h>
-#include <core/Logging/LoggerFactory.h>
+#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerFactory.h>
 
-#include <core/Memory/Memory.h>
+#include <Core/Memory/Memory.h>
 
 struct MyStruct
 {

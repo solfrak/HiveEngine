@@ -1,9 +1,9 @@
 //
 // Created by samuel on 11/17/24.
 //
-#include <core/Debug/Asserts.h>
-#include <core/Logging/Logger.h>
-#include "core/Logging/LoggerFactory.h"
+#include <Core/Debug/Asserts.h>
+#include <Core/Logging/Logger.h>
+#include "Core/Logging/LoggerFactory.h"
 
 int main()
 {

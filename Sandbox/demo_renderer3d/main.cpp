@@ -1,14 +1,14 @@
 //
 // Created by samuel on 11/14/24.
 //
-#include "core/Logging/Logger.h"
-#include "core/Logging/LoggerFactory.h"
-#include "core/Windowing/Window.h"
-#include "core/Windowing/WindowFactory.h"
-#include "core/Windowing/WindowManager.h"
+#include "Core/Logging/Logger.h"
+#include "Core/Logging/LoggerFactory.h"
+#include "Core/Windowing/Window.h"
+#include "Core/Windowing/WindowFactory.h"
+#include "Core/Windowing/WindowManager.h"
 
-#include "core/Rendering/Renderer3D.h"
-#include "core/Debug/Profiler.h"
+#include "Core/Rendering/Renderer3D.h"
+#include "Core/Debug/Profiler.h"
 
 int main()
 {

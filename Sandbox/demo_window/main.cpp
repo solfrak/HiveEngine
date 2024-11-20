@@ -1,9 +1,9 @@
 //
 // Created by samuel on 11/13/24.
 //
-#include "core/Windowing/Window.h"
-#include "core/Windowing/WindowManager.h"
-#include "core/Windowing/WindowFactory.h"
+#include "Core/Windowing/Window.h"
+#include "Core/Windowing/WindowManager.h"
+#include "Core/Windowing/WindowFactory.h"
 
 int main()
 {

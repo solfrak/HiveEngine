@@ -2,7 +2,7 @@
 // Created by samuel on 11/13/24.
 //
 
-#include "core/Debug/Profiler.h"
+#include "Core/Debug/Profiler.h"
 
 void otherLongRunningFunction()
 {

@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "core/Logging/Logger.h"
-#include "core/Logging/LoggerFactory.h"
+#include "Core/Logging/Logger.h"
+#include "Core/Logging/LoggerFactory.h"
 
 int main()
 {
