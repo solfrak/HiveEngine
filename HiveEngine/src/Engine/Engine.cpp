@@ -10,6 +10,7 @@
 #include "WindowFactory.h"
 #include "Debug/Profiler.h"
 #include "Platform/raylib/WindowRaylib.h"
+#include "Rendering/RenderCommand.h"
 
 static hive::Engine* g_engine = nullptr;
 
@@ -32,9 +33,9 @@ void hive::Engine::run()
 		m_Application->onUpdate();
 
 		//TODO: Abstract the usage of Raylib here
-		BeginDrawing();
+		RenderCommand::BeginFrame();
 		m_Application->onRender();
-		EndDrawing();
+		RenderCommand::EndFrame();
 	}
 
 	shutdown();

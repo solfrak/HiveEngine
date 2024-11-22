@@ -1,6 +1,6 @@
 #include <Engine/Entry.h>
 
-#include "../../HiveEngine/dep/raylib/src/raylib.h"
+#include "Rendering/RenderCommand.h"
 
 class DemoApp : public hive::Application
 {
@@ -25,7 +25,6 @@ void DemoApp::onUpdate()
 
 void DemoApp::onInit()
 {
-
 }
 
 void DemoApp::onShutdown()
@@ -41,6 +40,7 @@ hive::ApplicationConfig DemoApp::getConfig()
 //Render Logic Here
 void DemoApp::onRender()
 {
+	hive::RenderCommand::ClearBuffer();
 	hive::Renderer2D::beginScene();
 
 	hive::Renderer2D::endScene();
