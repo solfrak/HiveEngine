@@ -17,9 +17,7 @@ hive::Window *hive::WindowFactory::Create(const std::string &title, const int wi
 hive::Window* hive::WindowFactory::Create(const char* title, const int width, const int height,
                                           const WindowConfiguration configuration)
 {
-	Window* ptr = static_cast<WindowRaylib*>(hmalloc(sizeof(WindowRaylib)));
-	new (ptr) WindowRaylib(title, width, height, configuration);
-	return  ptr;
+	return new WindowRaylib(title, width, height, configuration);
 }
 
 #endif

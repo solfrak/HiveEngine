@@ -5,22 +5,26 @@
 #ifdef HIVE_RAYLIB_ENABLED
 #include "Renderer2D.h"
 
+static hive::Renderer2D* g_Renderer2D = nullptr;
+
 void hive::Renderer2D::init()
 {
+	g_Renderer2D = this;
 }
 
 void hive::Renderer2D::shutdown()
 {
+	g_Renderer2D = nullptr;
 }
 
 void hive::Renderer2D::beginScene()
 {
-	// BeginDrawing();
+
 }
 
 void hive::Renderer2D::endScene()
 {
-	// EndDrawing();
+
 }
 
 void hive::Renderer2D::drawRectangle(Rectangle rect, ColorRGBA color)

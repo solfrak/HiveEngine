@@ -17,7 +17,7 @@ hive::FileLogger* createFileLogger() {
 }
 
 
-hive::Logger* hive::LoggerFactory::createLogger(LogOutputType type)
+hive::Logger* hive::LoggerFactory::Create(LogOutputType type)
 {
     switch (type) {
         case LogOutputType::File:

@@ -17,7 +17,7 @@ namespace hive {
 
     class HAPI LoggerFactory {
     public:
-        static Logger* createLogger(LogOutputType type);
+        static Logger* Create(LogOutputType type);
     };
 
 }

@@ -14,6 +14,9 @@ hive::WindowRaylib::WindowRaylib(const char* title, int width, int height, Windo
 	if(config.has(WindowConfigurationOptions::RESIZABLE))
 		SetWindowState(FLAG_WINDOW_RESIZABLE);
 	SetTargetFPS(60);
+
+	//Disable the ESC key to exit by default
+	SetExitKey(0);
 }
 
 hive::WindowRaylib::~WindowRaylib()

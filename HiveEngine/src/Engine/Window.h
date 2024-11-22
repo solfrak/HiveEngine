@@ -14,7 +14,7 @@ namespace hive
         size_t sizeof_ptr;
         enum WindowBackend
         {
-            GLFW, RAYLIB
+            RAYLIB
         };
 
         WindowBackend backend;

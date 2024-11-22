@@ -16,11 +16,11 @@ namespace hive
 		void init();
 		void shutdown();
 
-		void beginScene();
-		void endScene();
+		static void beginScene();
+		static void endScene();
 
-		void drawRectangle(hive::Rectangle rect, ColorRGBA color);
-		void drawFPS();
+		static void drawRectangle(hive::Rectangle rect, ColorRGBA color);
+		static void drawFPS();
 		// void drawText();
 	};
 }
