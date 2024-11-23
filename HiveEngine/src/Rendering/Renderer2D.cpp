@@ -36,4 +36,9 @@ void hive::Renderer2D::drawFPS()
 {
 	DrawFPS(0, 0);
 }
+
+void hive::Renderer2D::drawText(const char* text, int font_size, Vec2i position, ColorRGBA color)
+{
+	DrawText(text, position.x, position.y, font_size, {color.r, color.g, color.b, color.a});
+}
 #endif

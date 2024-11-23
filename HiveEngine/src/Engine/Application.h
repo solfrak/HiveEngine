@@ -23,11 +23,12 @@ namespace hive
 	{
 	public:
 		virtual ~Application() = default;
+		virtual ApplicationConfig getConfig() = 0;
+
+		virtual void onInit() = 0;
 		virtual void onUpdate() = 0;
 		virtual void onRender() = 0;
-		virtual void onInit() = 0;
 		virtual void onShutdown() = 0;
-		virtual ApplicationConfig getConfig() = 0;
 
 	protected:
 		friend Engine;

@@ -21,7 +21,7 @@ namespace hive
 
 		static void drawRectangle(hive::Rectangle rect, ColorRGBA color);
 		static void drawFPS();
-		// void drawText();
+		static void drawText(const char* text, int font_size, Vec2i position, ColorRGBA color);
 	};
 }
 
