@@ -15,5 +15,5 @@ namespace hive::gui
 	void HAPI EndWindow(GuiContext *ctx);
 
 	//TODO return a RenderCommand array instead
-	void* HAPI GetRenderCommand(GuiContext *ctx, int &size);
+	// void* HAPI GetRenderCommand(GuiContext *ctx, int &size);
 }

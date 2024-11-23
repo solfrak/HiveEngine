@@ -15,7 +15,8 @@
 static hive::Engine* g_engine = nullptr;
 
 
-hive::Engine::Engine(int argc, char** argv): m_Window(nullptr), m_Application(nullptr)
+
+hive::Engine::Engine(int argc, char **argv, Application *application): m_Application(application)
 {
 	HPROFILE_FUNCTION();
 
@@ -23,6 +24,7 @@ hive::Engine::Engine(int argc, char** argv): m_Window(nullptr), m_Application(nu
 	//TODO: Parse the arguments
 
 	init();
+
 }
 
 void hive::Engine::run()
@@ -57,7 +59,6 @@ void hive::Engine::init()
 	//TODO: Default is console, Switch to other type based on argument if defined
 	Logger::init(LoggerFactory::Create(LogOutputType::Console));
 
-	m_Application = CreateApplication();
 	ApplicationConfig application_config = m_Application->getConfig();
 
 	WindowConfiguration config;

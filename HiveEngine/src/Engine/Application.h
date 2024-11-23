@@ -35,7 +35,3 @@ namespace hive
 		bool m_Running = true;
 	};
 }
-
-//This will be user defined
-hive::Application* CreateApplication();
-

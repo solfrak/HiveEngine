@@ -1,4 +1,5 @@
 #pragma once
+#include <hvpch.h>
 #include "Application.h"
 #include "Window.h"
 #include "Rendering/Renderer2D.h"
@@ -6,10 +7,10 @@
 
 namespace hive
 {
-	class Engine
+	class HAPI Engine
 	{
 	public:
-		Engine(int argc, char** argv);
+		Engine(int argc, char** argv, Application* application);
 		void run();
 
 		static Window* get_window();

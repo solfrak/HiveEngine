@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <cassert>
 
-#include <core/logging/ConsoleLogger.h>
+#include <Engine/ConsoleLogger.h>
 
 namespace hive {
 

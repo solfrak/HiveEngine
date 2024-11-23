@@ -28,6 +28,7 @@ void hive::gui::EndWindow(GuiContext* ctx)
 {
 }
 
-void* hive::gui::GetRenderCommand(GuiContext* ctx, int& size)
-{
-}
+// void* hive::gui::GetRenderCommand(GuiContext* ctx, int& size)
+// {
+// 	return nullptr;
+// }
