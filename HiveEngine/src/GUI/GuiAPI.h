@@ -16,10 +16,15 @@ namespace hive
 
 		void HAPI EndFrame(GuiContext *ctx);
 
-		HAPI void BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds);
 
+		//Container
+		HAPI void BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds);
 		HAPI void EndWindow(GuiContext *ctx);
 
+		//Widget
+		HAPI void Label(GuiContext *ctx, const char* label, Vec2i position);
+
+		//Utils
 		HAPI GuiRenderCommand *GetRenderCommand(GuiContext *ctx, int &size);
 
 	}

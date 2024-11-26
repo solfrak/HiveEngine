@@ -29,6 +29,7 @@ namespace hive
 				const char *text;
 				Vec2i position;
 				int font_size;
+				ColorRGBA color;
 			} label;
 		};
 

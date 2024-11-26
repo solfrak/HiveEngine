@@ -1,25 +1,24 @@
 //
 // Created by samuel on 11/14/24.
 //
-#include "Core/Logging/Logger.h"
-#include "Core/Logging/LoggerFactory.h"
-#include "Core/Windowing/Window.h"
-#include "Core/Windowing/WindowFactory.h"
-#include "Core/Windowing/WindowManager.h"
+#include "Engine/Logger.h"
+#include "Engine/LoggerFactory.h"
+#include "Engine/Window.h"
+#include "Engine/WindowConfiguration.h"
 
-#include "Core/Rendering/Renderer3D.h"
-#include "Core/Debug/Profiler.h"
+#include "Rendering/Renderer3D.h"
+#include "Debug/Profiler.h"
 
 int main()
 {
 	HPROFILE_BEGIN_SESSION();
-	hive::Logger::init(hive::LoggerFactory::createLogger(hive::LogOutputType::Console));
+	hive::Logger::init(hive::LoggerFactory::Create(hive::LogOutputType::Console));
 	hive::WindowConfiguration config;
 	config.set(hive::WindowConfigurationOptions::RESIZABLE, true);
-	hive::Window* window =  hive::WindowFactory::Create("HiveEngine", 800, 600, config);
+	hive::Window* window = new hive::Window();
+	window->init("HiveEngine", 800, 600, config);
 
 	//WindowManager is a singleton that make it possible to access the Window across all the application
-	hive::WindowManager::setCurrentWindow(std::shared_ptr<hive::Window>(window));
 	hive::Renderer3D renderer_3d;
 	renderer_3d.init();
 

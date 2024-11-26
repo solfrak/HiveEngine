@@ -43,45 +43,46 @@ void hive::gui::EndFrame(GuiContext* ctx)
 
 }
 
-hive::gui::Container getContainer(hive::gui::GuiContext * ctx, size_t id)
+hive::gui::Container* getContainer(hive::gui::GuiContext * ctx, size_t id)
 {
-	if(ctx->containerPool.find(id) != ctx->containerPool.end())
+	if(ctx->containerMapping.find(id) != ctx->containerMapping.end())
 	{
-		return ctx->containerPool.at(id);
+		return &ctx->containers[ctx->containerMapping.at(id)];
 	}
 
 	constexpr hive::gui::Container new_container = {{0, 0, 0, 0}};
-	ctx->containerPool[id] = new_container;
-	return new_container;
+	ctx->containerMapping[id] = ctx->containerMapping.size();
+	ctx->containers[ctx->containerMapping[id]] = new_container;
+	return &ctx->containers[ctx->containerMapping.at(id)];
 }
 
 void hive::gui::BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds)
 {
 	auto container_id = stringToHash(title);
-	Container container = getContainer(ctx, container_id);
+	Container *container = getContainer(ctx, container_id);
 
 	//First time initializing the container
-	if(container.rect.size.w == 0)
+	if(container->rect.size.w == 0)
 	{
-		container.rect = bounds;
+		container->rect = bounds;
 
 		if(!ctx->containerStack.empty())
 		{
 			//Place the container relative to it's parent
 			const auto parent = ctx->containerStack.top();
-			container.rect.position.x += parent->rect.position.x;
-			container.rect.position.y += parent->rect.position.y;
+			container->rect.position.x += parent->rect.position.x;
+			container->rect.position.y += parent->rect.position.y;
 		}
 	}
 
-	ctx->containerStack.push(&ctx->containerPool[static_cast<int>(container_id)]);
+	ctx->containerStack.push(&ctx->containers[ctx->containerMapping[container_id]]);
 
 	GuiRenderCommand border_command = {};
 	border_command.type = GuiRenderCommandType::Rectangle;
 	//TODO: Adjust color based on context style
 	Rectangle border_rect = {
-		{container.rect.position.x - 1, container.rect.position.y - 1},
-		{container.rect.size.w + 2, container.rect.size.h + 2}
+		{container->rect.position.x - 1, container->rect.position.y - 1},
+		{container->rect.size.w + 2, container->rect.size.h + 2}
 	};
 	border_command.rect = {border_rect, {100, 100, 100, 255}};
 	pushRenderCommand(ctx, border_command);
@@ -89,18 +90,20 @@ void hive::gui::BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds
 	GuiRenderCommand box_command = {};
 	box_command.type = GuiRenderCommandType::Rectangle;
 	//TODO: Adjust color based on context style
-	box_command.rect = {container.rect, {25,25,25,255}};
+	box_command.rect = {container->rect, {25,25,25,255}};
 	pushRenderCommand(ctx, box_command);
 
 	GuiRenderCommand header_command = {};
 	header_command.type = GuiRenderCommandType::Rectangle;
 	//TODO: Adjust color based on context style
 	Rectangle header_rect = {
-		container.rect.position,
-		{container.rect.size.w, 20}
+		container->rect.position,
+		{container->rect.size.w, 20}
 	};
 	header_command.rect = {header_rect, {50,50,50,255}};
 	pushRenderCommand(ctx, header_command);
+
+	Label(ctx, title, {5, 5});
 }
 
 
@@ -108,6 +111,24 @@ void hive::gui::BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds
 void hive::gui::EndWindow(GuiContext* ctx)
 {
 	ctx->containerStack.pop();
+}
+
+void hive::gui::Label(GuiContext *ctx, const char *label, Vec2i position)
+{
+	GuiRenderCommand label_command = {};
+	label_command.type = GuiRenderCommandType::Label;
+	if(!ctx->containerStack.empty())
+	{
+		Container* c = ctx->containerStack.top();
+		//TODO: Get font style based on context style + add color
+		label_command.label = {label, {c->rect.position.x + position.x, c->rect.position.y + position.y}, 12, {255, 255, 255, 255}};
+	}
+	else
+	{
+		label_command.label = {label, position, 12, {255, 255, 255, 255}};
+	}
+
+	pushRenderCommand(ctx, label_command);
 }
 
 hive::gui::GuiRenderCommand * hive::gui::GetRenderCommand(GuiContext *ctx, int &size)

@@ -66,6 +66,7 @@ void hive::Engine::init()
 	ApplicationConfig application_config = m_Application->getConfig();
 
 	WindowConfiguration config;
+	config.set(WindowConfigurationOptions::RESIZABLE, true);
 	m_Window.init(application_config.application_title, application_config.application_width, application_config.application_height, config);
 
 	m_Renderer2D.init();

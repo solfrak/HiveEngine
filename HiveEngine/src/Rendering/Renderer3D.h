@@ -16,10 +16,10 @@ namespace hive
 		void shutdown();
 
 		//TODO: add Camera parameter
-		void beginScene(Camera3D cam);
-		void endScene();
+		static void beginScene(Camera3D cam);
+		static void endScene();
 
-		void drawMesh(const Mesh& mesh);
+		static void drawMesh(const Mesh& mesh);
 
 
 	private:

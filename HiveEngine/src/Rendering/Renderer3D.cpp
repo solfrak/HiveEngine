@@ -8,12 +8,16 @@
 #include "Mesh.h"
 #include <Debug/Profiler.h>
 
+static hive::Renderer3D *s_instance = nullptr;
+
 void hive::Renderer3D::init()
 {
+	s_instance = this;
 }
 
 void hive::Renderer3D::shutdown()
 {
+	s_instance = nullptr;
 }
 
 void hive::Renderer3D::beginScene(Camera3D cam)
