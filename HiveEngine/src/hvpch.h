@@ -10,6 +10,7 @@
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
+#include <stack>
 
 //Platform detection
 #if defined(__linux__)

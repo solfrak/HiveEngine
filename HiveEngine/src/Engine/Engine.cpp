@@ -7,25 +7,27 @@
 #include "Logger.h"
 #include "LoggerFactory.h"
 #include "raylib.h"
-#include "WindowFactory.h"
 #include "Debug/Profiler.h"
-#include "Platform/raylib/WindowRaylib.h"
 #include "Rendering/RenderCommand.h"
 
 static hive::Engine* g_engine = nullptr;
 
 
 
-hive::Engine::Engine(int argc, char **argv, Application *application): m_Application(application)
+hive::Engine::Engine(int argc, char **argv) : m_Application(nullptr)
 {
 	HPROFILE_FUNCTION();
 
 	g_engine = this;
 	//TODO: Parse the arguments
-
-	init();
-
 }
+
+void hive::Engine::setApplication(Application *application)
+{
+	HPROFILE_FUNCTION();
+	m_Application = application;
+}
+
 
 void hive::Engine::run()
 {
@@ -43,13 +45,15 @@ void hive::Engine::run()
 	shutdown();
 }
 
-hive::Window* hive::Engine::get_window()
+hive::Window& hive::Engine::get_window()
 {
+	HPROFILE_FUNCTION();
 	return g_engine->m_Window;
 }
 
 hive::Application* hive::Engine::get_application()
 {
+	HPROFILE_FUNCTION();
 	return g_engine->m_Application;
 }
 
@@ -62,7 +66,7 @@ void hive::Engine::init()
 	ApplicationConfig application_config = m_Application->getConfig();
 
 	WindowConfiguration config;
-	m_Window = WindowFactory::Create(application_config.application_title, application_config.application_width, application_config.application_height, config);
+	m_Window.init(application_config.application_title, application_config.application_width, application_config.application_height, config);
 
 	m_Renderer2D.init();
 	m_Renderer3D.init();
@@ -80,13 +84,6 @@ void hive::Engine::shutdown()
 	m_Renderer3D.shutdown();
 	m_Renderer2D.shutdown();
 
-	switch (m_Window->getNativeWindowData().backend)
-	{
-	case WindowNativeData::RAYLIB:
-		//TODO: Use custom memory allocator instead
-		delete m_Window;
-		break;
-	}
 
 	Logger::shutdown();
 }

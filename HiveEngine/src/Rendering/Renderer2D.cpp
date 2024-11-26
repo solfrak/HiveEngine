@@ -1,8 +1,5 @@
-//
-// Created by samuel on 11/19/24.
-//
-#include "raylib.h"
 #ifdef HIVE_RAYLIB_ENABLED
+#include "raylib.h"
 #include "Renderer2D.h"
 
 static hive::Renderer2D* g_Renderer2D = nullptr;

@@ -10,17 +10,18 @@ namespace hive
 	class HAPI Engine
 	{
 	public:
-		Engine(int argc, char** argv, Application* application);
+		Engine(int argc, char** argv);
+		void setApplication(Application *application);
+		void init();
 		void run();
 
-		static Window* get_window();
+		static Window& get_window();
 		static Application* get_application();
 	private:
-		void init();
 		void shutdown();
 
-		Window* m_Window;
-		Application* m_Application;
+		Window m_Window;
+		Application* m_Application = nullptr;
 
 		Renderer2D m_Renderer2D;
 		Renderer3D m_Renderer3D;

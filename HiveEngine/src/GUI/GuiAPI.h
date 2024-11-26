@@ -1,19 +1,26 @@
 #pragma once
 
-#include "GuiContext.h"
 #include "hvpch.h"
+#include "GuiType.h"
+#include "GuiRenderCommand.h"
 
-namespace hive::gui
+namespace hive
 {
-	void HAPI Initialize(GuiContext *ctx);
-	void HAPI Shutdown(GuiContext *ctx);
+	namespace gui
+	{
+		HAPI GuiContext *Initialize();
 
-	void HAPI BeginFrame(GuiContext *ctx);
-	void HAPI EndFrame(GuiContext *ctx);
+		void HAPI Shutdown(GuiContext *&ctx);
 
-	void HAPI BeginWindow(GuiContext *ctx);
-	void HAPI EndWindow(GuiContext *ctx);
+		void HAPI BeginFrame(GuiContext *ctx);
 
-	//TODO return a RenderCommand array instead
-	// void* HAPI GetRenderCommand(GuiContext *ctx, int &size);
+		void HAPI EndFrame(GuiContext *ctx);
+
+		HAPI void BeginWindow(GuiContext *ctx, const char *title, Rectangle bounds);
+
+		HAPI void EndWindow(GuiContext *ctx);
+
+		HAPI GuiRenderCommand *GetRenderCommand(GuiContext *ctx, int &size);
+
+	}
 }

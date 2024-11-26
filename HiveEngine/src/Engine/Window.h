@@ -22,15 +22,18 @@ namespace hive
 
     class HAPI Window {
     public:
-        virtual ~Window() = default;
+        void init(const char* title, int width, int height, WindowConfiguration config);
+        ~Window();
 
-        [[nodiscard]] virtual int getHeight() const = 0;
-        [[nodiscard]] virtual WindowNativeData getNativeWindowData() const = 0;
-        [[nodiscard]] virtual int getWidth() const = 0;
-        virtual void onUpdate() const = 0;
-        virtual void setIcon(unsigned char* data, int width, int height) const = 0;
-        [[nodiscard]] virtual bool shouldClose() const = 0;
-        virtual void updateConfiguration(WindowConfiguration configuration) = 0;
-        virtual WindowConfiguration getConfiguration() = 0;
+        [[nodiscard]] int getHeight() const;
+        [[nodiscard]] WindowNativeData getNativeWindowData() const;
+        [[nodiscard]] int getWidth() const;
+        void onUpdate() const;
+        void setIcon(unsigned char* data, int width, int height) const;
+        [[nodiscard]] bool shouldClose() const;
+        void updateConfiguration(WindowConfiguration configuration);
+        WindowConfiguration getConfiguration() const;
+    private:
+        WindowConfiguration m_config;
     };
 }

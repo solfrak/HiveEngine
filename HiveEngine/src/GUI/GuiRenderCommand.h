@@ -1,20 +1,36 @@
+#pragma once
+
+#include "hvpch.h"
 #include "Core/Shape.h"
 #include "Core/Color.h"
 #include "Core/Vector.h"
 
-namespace hive::gui
+namespace hive
 {
-	enum class GuiRenderCommandType
+	namespace gui
 	{
-		Rectangle, Label
-	};
-	struct GuiRenderCommand
-	{
-		GuiRenderCommandType type;
-		union
+		enum class GuiRenderCommandType
 		{
-			struct { Rectangle rect; ColorRGBA color;} rect;
-			struct {const char* text; Vec2i position; int font_size; } label;
+			Rectangle, Label
 		};
-	};
+
+		struct HAPI GuiRenderCommand
+		{
+			GuiRenderCommandType type;
+
+			struct
+			{
+				Rectangle rect;
+				ColorRGBA color;
+			} rect;
+
+			struct
+			{
+				const char *text;
+				Vec2i position;
+				int font_size;
+			} label;
+		};
+
+	}
 }

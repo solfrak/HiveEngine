@@ -1,11 +1,11 @@
 //
 // Created by samuel on 11/13/24.
 //
-#include "WindowRaylib.h"
 #ifdef HIVE_RAYLIB_ENABLED
+#include <Engine/Window.h>
 #include "raylib.h"
 
-hive::WindowRaylib::WindowRaylib(const char* title, int width, int height, WindowConfiguration config)
+void hive::Window::init(const char *title, int width, int height, WindowConfiguration config)
 {
 
 	InitWindow(width, height, title);
@@ -19,38 +19,38 @@ hive::WindowRaylib::WindowRaylib(const char* title, int width, int height, Windo
 	SetExitKey(0);
 }
 
-hive::WindowRaylib::~WindowRaylib()
+hive::Window::~Window()
 {
 	CloseWindow();
 }
 
-int hive::WindowRaylib::getHeight() const
+int hive::Window::getHeight() const
 {
 	return GetScreenWidth();
 }
 
-hive::WindowNativeData hive::WindowRaylib::getNativeWindowData() const
+hive::WindowNativeData hive::Window::getNativeWindowData() const
 {
 	WindowNativeData windowNativeData;
 	windowNativeData.backend = WindowNativeData::RAYLIB;
 	windowNativeData.window_handle = GetWindowHandle();
-	windowNativeData.sizeof_ptr = sizeof(WindowRaylib);
+	windowNativeData.sizeof_ptr = sizeof(Window);
 
 	return windowNativeData;
 }
 
-int hive::WindowRaylib::getWidth() const
+int hive::Window::getWidth() const
 {
 	return GetScreenWidth();
 }
 
-void hive::WindowRaylib::onUpdate() const
+void hive::Window::onUpdate() const
 {
 	// BeginDrawing();
 	// EndDrawing();
 }
 
-void hive::WindowRaylib::setIcon(unsigned char* data, int width, int height) const
+void hive::Window::setIcon(unsigned char* data, int width, int height) const
 {
 	Image image;
 	image.width = width;
@@ -59,18 +59,18 @@ void hive::WindowRaylib::setIcon(unsigned char* data, int width, int height) con
 	SetWindowIcon(image);
 }
 
-bool hive::WindowRaylib::shouldClose() const
+bool hive::Window::shouldClose() const
 {
 	return WindowShouldClose();
 }
 
-void hive::WindowRaylib::updateConfiguration(WindowConfiguration configuration)
+void hive::Window::updateConfiguration(WindowConfiguration configuration)
 {
 	m_config = configuration;
 	//TODO: Handle changes
 }
 
-hive::WindowConfiguration hive::WindowRaylib::getConfiguration()
+hive::WindowConfiguration hive::Window::getConfiguration() const
 {
 	return m_config;
 }

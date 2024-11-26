@@ -22,6 +22,7 @@ namespace hive
 	class HAPI Application
 	{
 	public:
+		Application(Engine& engine) : m_engine(engine) {}
 		virtual ~Application() = default;
 		virtual ApplicationConfig getConfig() = 0;
 
@@ -32,6 +33,8 @@ namespace hive
 
 	protected:
 		friend Engine;
+
+		Engine &m_engine;
 		bool m_Running = true;
 	};
 }
