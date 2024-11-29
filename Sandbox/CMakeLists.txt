@@ -12,7 +12,7 @@ target_link_libraries(Demo_Logger PRIVATE HiveEngine)
 add_dll_copy_to_target(Demo_Logger)
 
 add_executable(Demo_Profilling demo_profilling/main.cpp)
-target_include_directories(Demo_Profilling PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_include_directories(Demo_Profilling PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src ${CMAKE_SOURCE_DIR}/HiveEngine/dep/perfetto)
 target_link_libraries(Demo_Profilling PRIVATE HiveEngine)
 add_dll_copy_to_target(Demo_Profilling)
 
@@ -39,7 +39,7 @@ add_dll_copy_to_target(Demo_Memory)
 
 
 add_executable(Demo_Application demo_application/application.cpp)
-target_include_directories(Demo_Application PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)
+target_include_directories(Demo_Application PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src ${CMAKE_SOURCE_DIR}/HiveEngine/dep/perfetto)
 target_link_libraries(Demo_Application PRIVATE HiveEngine)
 add_dll_copy_to_target(Demo_Application)
 

@@ -1,11 +1,17 @@
 #include <iostream>
 
-#include "Core/Logging/Logger.h"
-#include "Core/Logging/LoggerFactory.h"
+#include "Engine/Logger.h"
+#include "Engine/LoggerFactory.h"
+
+#include <Engine/Application.h>
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
 
 int main()
 {
-	hive::Logger::init(hive::LoggerFactory::createLogger(hive::LogOutputType::Console));
+	hive::Logger::init(hive::LoggerFactory::Create(hive::LogOutputType::Console));
 	HLOG_FATAL("FATAL Message");
 	HLOG_ERROR("ERROR Message");
 	HLOG_WARN("WARNING Message");

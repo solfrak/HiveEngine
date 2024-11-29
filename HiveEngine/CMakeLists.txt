@@ -20,25 +20,20 @@ if(BACKEND STREQUAL "raylib")
     add_subdirectory(dep/raylib)
     target_link_libraries(HiveEngine PRIVATE raylib)
 
-    add_subdirectory(dep/easy_profiler)
-    target_link_libraries(HiveEngine PRIVATE easy_profiler)
+    add_library(perfetto STATIC dep/perfetto/perfetto.cc dep/perfetto/perfetto.h)
+    target_link_libraries(HiveEngine PRIVATE perfetto)
 
 
 #    Include directories
     target_include_directories(HiveEngine PRIVATE src)
     target_include_directories(HiveEngine PRIVATE dep/raylib/src)
     target_include_directories(HiveEngine PRIVATE dep/entt/src)
+    target_include_directories(HiveEngine PRIVATE dep/perfetto)
 
 #    Precompiled header
     target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)
+#    target_precompile_headers(HiveEngine PRIVATE dep/perfetto/perfetto.h)
 
-    install(TARGETS HiveEngine
-            EXPORT HiveEngineExport
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib
-            RUNTIME)
-
-    install(DIRECTORY src/ DESTINATION include/hiveengine FILES_MATCHING PATTERN "*.h")
 else ()
     message("Unsupported backend")
 endif ()

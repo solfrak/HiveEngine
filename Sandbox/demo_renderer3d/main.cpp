@@ -4,14 +4,19 @@
 #include "Engine/Logger.h"
 #include "Engine/LoggerFactory.h"
 #include "Engine/Window.h"
-#include "Engine/WindowConfiguration.h"
+#include "Engine/WindowFactory.h"
+#include "Engine/WindowManager.h"
 
 #include "Rendering/Renderer3D.h"
-#include "Debug/Profiler.h"
+
+#include <Engine/Application.h>
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
 
 int main()
 {
-	HPROFILE_BEGIN_SESSION();
 	hive::Logger::init(hive::LoggerFactory::Create(hive::LogOutputType::Console));
 	hive::WindowConfiguration config;
 	config.set(hive::WindowConfigurationOptions::RESIZABLE, true);
@@ -32,7 +37,6 @@ int main()
 
 	while (!window->shouldClose())
 	{
-		HPROFILE_SCOPE("Rendering");
 		mesh.rotation.y += 0.5f;
 		renderer_3d.beginScene(camera);
 		// window->onUpdate();
@@ -43,5 +47,4 @@ int main()
 	renderer_3d.shutdown();
 
 	HLOG_INFO("Application terminating");
-	HPROFILE_END_SESSION();
 }

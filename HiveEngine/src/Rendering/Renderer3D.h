@@ -15,8 +15,7 @@ namespace hive
 		void init();
 		void shutdown();
 
-		//TODO: add Camera parameter
-		static void beginScene(Camera3D cam);
+		static void beginScene(const Camera3D &cam);
 		static void endScene();
 
 		static void drawMesh(const Mesh& mesh);

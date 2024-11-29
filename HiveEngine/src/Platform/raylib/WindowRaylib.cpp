@@ -7,7 +7,7 @@
 
 void hive::Window::init(const char *title, int width, int height, WindowConfiguration config)
 {
-
+	TRACE_EVENT("engine", "WindowRaylib::WindowRaylib");
 	InitWindow(width, height, title);
 
 	//TODO: Handle all config

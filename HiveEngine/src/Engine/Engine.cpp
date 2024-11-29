@@ -4,6 +4,8 @@
 
 #include "Engine.h"
 
+#include <thread>
+
 #include "Logger.h"
 #include "LoggerFactory.h"
 #include "raylib.h"
@@ -16,7 +18,7 @@ static hive::Engine* g_engine = nullptr;
 
 hive::Engine::Engine(int argc, char **argv) : m_Application(nullptr)
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::Engine");
 
 	g_engine = this;
 	//TODO: Parse the arguments
@@ -31,7 +33,7 @@ void hive::Engine::setApplication(Application *application)
 
 void hive::Engine::run()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::run");
 	while(m_Application->m_Running)
 	{
 		m_Application->onUpdate();
@@ -59,7 +61,7 @@ hive::Application* hive::Engine::get_application()
 
 void hive::Engine::init()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::init");
 	//TODO: Default is console, Switch to other type based on argument if defined
 	Logger::init(LoggerFactory::Create(LogOutputType::Console));
 
@@ -78,7 +80,7 @@ void hive::Engine::init()
 
 void hive::Engine::shutdown()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::shutdown");
 
 	m_Application->onShutdown();
 

@@ -1,10 +1,16 @@
 //
 // Created by samuel on 11/17/24.
 //
-#include <Core/Logging/Logger.h>
-#include <Core/Logging/LoggerFactory.h>
+#include <Engine/Logger.h>
+#include <Engine/LoggerFactory.h>
 
-#include <Core/Memory/Memory.h>
+#include <Ressource/Memory.h>
+
+#include <Engine/Application.h>
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
 
 struct MyStruct
 {
@@ -12,7 +18,7 @@ struct MyStruct
 };
 int main()
 {
-	hive::Logger::init(hive::LoggerFactory::createLogger(hive::LogOutputType::Console));
+	hive::Logger::init(hive::LoggerFactory::Create(hive::LogOutputType::Console));
 
 	MyStruct* mystruct = static_cast<MyStruct*>(hmalloc(sizeof(MyStruct)));
 	mystruct->x = 10;

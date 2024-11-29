@@ -20,9 +20,9 @@ void hive::Renderer3D::shutdown()
 	s_instance = nullptr;
 }
 
-void hive::Renderer3D::beginScene(Camera3D cam)
+void hive::Renderer3D::beginScene(const Camera3D &cam)
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("rendering", "Renderer3D::beginScene");
 	ClearBackground(BLACK);
 	::Camera temp_cam;
 	temp_cam.position = {cam.position.x, cam.position.y, cam.position.z};
@@ -32,6 +32,7 @@ void hive::Renderer3D::beginScene(Camera3D cam)
 	temp_cam.projection = CAMERA_PERSPECTIVE;
 
 	BeginMode3D(temp_cam);
+
 }
 
 void hive::Renderer3D::endScene()
@@ -41,7 +42,7 @@ void hive::Renderer3D::endScene()
 
 void hive::Renderer3D::drawMesh(const hive::Mesh& mesh)
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("rendering", "Renderer3D::drawMesh");
 	mesh.draw();
 }
 #endif

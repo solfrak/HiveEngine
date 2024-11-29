@@ -5,7 +5,6 @@
 #pragma once
 #include "hvpch.h"
 
-
 HAPI void reportAssert(const char* expression, const char* file, int line);
 
 

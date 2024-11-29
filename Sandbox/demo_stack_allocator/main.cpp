@@ -5,6 +5,12 @@
 
 #include "Ressource/Memory.h"
 
+#include <Engine/Application.h>
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
+
 struct MyStruct
 {
 	int x;

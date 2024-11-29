@@ -2,16 +2,25 @@
 // Created by samuel on 11/13/24.
 //
 
-#include "Core/Debug/Profiler.h"
+#include "Debug/Profiler.h"
+#include "Engine/Application.h"
+#include <thread>
+
+//Not used. Just to no have compiler error
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
+
 
 void otherLongRunningFunction()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "otherLongRunningFunction");
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 void longRunningFunction()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "longRunningFunction");
 	otherLongRunningFunction();
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }

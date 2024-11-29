@@ -1,4 +1,5 @@
 #include <Engine/Entry.h>
+#include <Engine/Logger.h>
 
 #include "GUI/GuiAPI.h"
 #include "GUI/GuiType.h"

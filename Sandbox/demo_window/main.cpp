@@ -1,10 +1,15 @@
 //
 // Created by samuel on 11/13/24.
 //
-#include "Core/Windowing/Window.h"
-#include "Core/Windowing/WindowManager.h"
-#include "Core/Windowing/WindowFactory.h"
+#include "Engine/Window.h"
+#include "Engine/WindowFactory.h"
+#include "Engine/WindowManager.h"
 
+#include <Engine/Application.h>
+hive::Application* CreateApplication()
+{
+ 	return nullptr;
+}
 int main()
 {
 	hive::WindowConfiguration config;

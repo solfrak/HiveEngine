@@ -1,80 +1,72 @@
+//
+// Created by samuel on 11/29/24.
+//
+
 #include "Profiler.h"
+#include <fstream>
 
-void hive::Instrumentor::BeginSession(const std::string& filepath)
+#include "Engine/Logger.h"
+#ifdef PROFILER_ENABLED
+//Define some tracing categories
+
+
+std::unique_ptr<perfetto::TracingSession> g_profiler_session = nullptr;
+
+void perfetto_log_callback(perfetto::LogMessageCallbackArgs args)
 {
-	m_OutputStream.open(filepath);
-	WriteHeader();
+	switch (args.level)
+	{
+	case perfetto::LogLev::kLogDebug:
+		break;
+	case perfetto::LogLev::kLogInfo:
+		break;
+	case perfetto::LogLev::kLogImportant:
+		break;
+	case perfetto::LogLev::kLogError:
+		HLOG_ERROR(args.message);
+		break;
+	}
 }
 
-void hive::Instrumentor::EndSession()
+void hive::profiler::InitPerfetto()
 {
-	WriteFooter();
-	m_OutputStream.close();
-	m_ProfileCount = 0;
+	perfetto::TracingInitArgs args;
+	args.backends = perfetto::kInProcessBackend;
+	args.log_message_callback = perfetto_log_callback;
+
+	perfetto::Tracing::Initialize(args);
+	perfetto::TrackEvent::Register();
+
+	perfetto::TraceConfig cfg;
+	cfg.add_buffers()->set_size_kb(1024);
+	auto* ds_cfg = cfg.add_data_sources()->mutable_config();
+	ds_cfg->set_name("track_event");
+
+	g_profiler_session = perfetto::Tracing::NewTrace();
+
+	g_profiler_session->Setup(cfg);
+	g_profiler_session->StartBlocking();
+
+	perfetto::ProcessTrack process_track = perfetto::ProcessTrack::Current();
+	perfetto::protos::gen::TrackDescriptor desc = process_track.Serialize();
+	desc.mutable_process()->set_process_name("HiveEngine");
+	perfetto::TrackEvent::SetTrackDescriptor(process_track, desc);
 }
 
-void hive::Instrumentor::WriteProfile(const ProfileResult& result)
+void hive::profiler::EndPerfetto()
 {
-	if (m_ProfileCount++ > 0)
-		m_OutputStream << ",";
+	perfetto::TrackEvent::Flush();
 
-	std::string name = result.Name;
-	std::replace(name.begin(), name.end(), '"', '\'');
+	g_profiler_session->StopBlocking();
+	std::vector<char> trace_data(g_profiler_session->ReadTraceBlocking());
 
-	m_OutputStream << "{";
-	m_OutputStream << "\"cat\":\"function\",";
-	m_OutputStream << "\"dur\":" << (result.End - result.Start) << ',';
-	m_OutputStream << "\"name\":\"" << name << "\",";
-	m_OutputStream << "\"ph\":\"X\",";
-	m_OutputStream << "\"pid\":0,";
-	m_OutputStream << "\"tid\":" << result.ThreadID << ",";
-	m_OutputStream << "\"ts\":" << result.Start;
-	m_OutputStream << "}";
-
-	m_OutputStream.flush();
+	std::ofstream output;
+	output.open("HiveEngineTrace.pftrace", std::ios::out | std::ios::binary);
+	output.write(&trace_data[0], std::streamsize(trace_data.size()));
+	output.close();
 }
 
-void hive::Instrumentor::WriteHeader()
-{
-	m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
-	m_OutputStream.flush();
-}
+PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
-void hive::Instrumentor::WriteFooter()
-{
-	m_OutputStream << "]}";
-	m_OutputStream.flush();
-}
-
-hive::Instrumentor& hive::Instrumentor::Get()
-{
-	static Instrumentor instance;
-	return instance;
-}
-
-hive::InstrumentationTimer::InstrumentationTimer(const char* name)
-	: m_Name(name), m_Stopped(false)
-{
-	m_StartTimepoint = std::chrono::high_resolution_clock::now();
-}
-
-hive::InstrumentationTimer::~InstrumentationTimer()
-{
-	if (!m_Stopped)
-		Stop();
-}
-
-void hive::InstrumentationTimer::Stop()
-{
-	auto endTimepoint = std::chrono::high_resolution_clock::now();
-
-	long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().
-		count();
-	long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
-
-	uint32_t threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
-	Instrumentor::Get().WriteProfile({m_Name, start, end, threadID});
-
-	m_Stopped = true;
-}
+#endif
 
