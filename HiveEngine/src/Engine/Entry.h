@@ -5,7 +5,7 @@
 
 hive::Application* CreateApplication(hive::Engine &engine);
 
-inline int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	HPROFILE_BEGIN_SESSION();
 

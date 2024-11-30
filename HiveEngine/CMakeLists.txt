@@ -10,7 +10,6 @@ set(BACKEND raylib)
 #set(CMAKE_CXX_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-
 if(BACKEND STREQUAL "raylib")
     file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
     add_library(HiveEngine SHARED ${SOURCES})
@@ -21,7 +20,7 @@ if(BACKEND STREQUAL "raylib")
     target_link_libraries(HiveEngine PRIVATE raylib)
 
     add_library(perfetto STATIC dep/perfetto/perfetto.cc dep/perfetto/perfetto.h)
-    target_link_libraries(HiveEngine PRIVATE perfetto)
+    target_link_libraries(HiveEngine PRIVATE perfetto ${CMAKE_THREAD_LIBS_INIT})
 
 
 #    Include directories
@@ -33,6 +32,14 @@ if(BACKEND STREQUAL "raylib")
 #    Precompiled header
     target_precompile_headers(HiveEngine PRIVATE src/hvpch.h)
 #    target_precompile_headers(HiveEngine PRIVATE dep/perfetto/perfetto.h)
+
+
+    if (MSVC)
+        target_compile_options(perfetto PRIVATE "/bigobj")
+        target_link_libraries(HiveEngine PRIVATE ws2_32)
+        add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
+        target_compile_options(HiveEngine PRIVATE "/permissive-")
+    endif (MSVC)
 
 else ()
     message("Unsupported backend")

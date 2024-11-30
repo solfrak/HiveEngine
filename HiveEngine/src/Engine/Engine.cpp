@@ -26,7 +26,7 @@ hive::Engine::Engine(int argc, char **argv) : m_Application(nullptr)
 
 void hive::Engine::setApplication(Application *application)
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::setApplication");
 	m_Application = application;
 }
 
@@ -49,13 +49,13 @@ void hive::Engine::run()
 
 hive::Window& hive::Engine::get_window()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::get_window");
 	return g_engine->m_Window;
 }
 
 hive::Application* hive::Engine::get_application()
 {
-	HPROFILE_FUNCTION();
+	TRACE_EVENT("engine", "Engine::get_application");
 	return g_engine->m_Application;
 }
 

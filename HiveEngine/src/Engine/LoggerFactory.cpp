@@ -10,19 +10,20 @@
 const char* LOG_FILE_OUTPUT = "log.txt";
 
 hive::ConsoleLogger* createConsoleLogger() {
-    HPROFILE_FUNCTION();
+    TRACE_EVENT("engine", "createConsoleLogger");
+
     return new hive::ConsoleLogger();
 }
 
 hive::FileLogger* createFileLogger() {
-    HPROFILE_FUNCTION();
+    TRACE_EVENT("engine", "createFileLogger");
     return new hive::FileLogger(LOG_FILE_OUTPUT);
 }
 
 
 hive::Logger* hive::LoggerFactory::Create(LogOutputType type)
 {
-    HPROFILE_FUNCTION();
+    TRACE_EVENT("engine", "Create");
     switch (type) {
         case LogOutputType::File:
             return createFileLogger();

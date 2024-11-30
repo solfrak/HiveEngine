@@ -5,6 +5,7 @@ function(add_dll_copy_to_target target)
             COMMENT "Copying HiveEngine.dll to ${target} directory"
     )
 endfunction()
+set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Demo_Logger demo_logging/main.cpp)
 target_include_directories(Demo_Logger PRIVATE ${CMAKE_SOURCE_DIR}/HiveEngine/src)

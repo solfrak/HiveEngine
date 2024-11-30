@@ -21,8 +21,8 @@ PERFETTO_DEFINE_CATEGORIES(
 );
 namespace hive::profiler
 {
-	void InitPerfetto();
-	void EndPerfetto();
+	void HAPI InitPerfetto();
+	void HAPI EndPerfetto();
 }
 
 //Define some tracing categories

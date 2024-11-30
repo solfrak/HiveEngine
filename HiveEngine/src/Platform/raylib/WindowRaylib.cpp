@@ -4,6 +4,7 @@
 #ifdef HIVE_RAYLIB_ENABLED
 #include <Engine/Window.h>
 #include "raylib.h"
+#include <Debug/Profiler.h>
 
 void hive::Window::init(const char *title, int width, int height, WindowConfiguration config)
 {
