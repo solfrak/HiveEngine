@@ -8,7 +8,7 @@
 
 void hive::Window::init(const char *title, int width, int height, WindowConfiguration config)
 {
-	TRACE_EVENT("engine", "WindowRaylib::WindowRaylib");
+	HPROFILE_TRACE_EVENT("engine", "WindowRaylib::WindowRaylib");
 	InitWindow(width, height, title);
 
 	//TODO: Handle all config
@@ -33,7 +33,7 @@ int hive::Window::getHeight() const
 hive::WindowNativeData hive::Window::getNativeWindowData() const
 {
 	WindowNativeData windowNativeData;
-	windowNativeData.backend = WindowNativeData::RAYLIB;
+	windowNativeData.backend = WindowBackend::RAYLIB;
 	windowNativeData.window_handle = GetWindowHandle();
 	windowNativeData.sizeof_ptr = sizeof(Window);
 
@@ -45,11 +45,6 @@ int hive::Window::getWidth() const
 	return GetScreenWidth();
 }
 
-void hive::Window::onUpdate() const
-{
-	// BeginDrawing();
-	// EndDrawing();
-}
 
 void hive::Window::setIcon(unsigned char* data, int width, int height) const
 {

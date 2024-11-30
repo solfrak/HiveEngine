@@ -66,7 +66,8 @@ void hive::profiler::EndPerfetto()
 	output.close();
 }
 
-PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 
 #endif
+
+PERFETTO_TRACK_EVENT_STATIC_STORAGE();
 

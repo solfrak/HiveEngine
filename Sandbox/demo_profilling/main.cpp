@@ -15,12 +15,12 @@ hive::Application* CreateApplication()
 
 void otherLongRunningFunction()
 {
-	TRACE_EVENT("engine", "otherLongRunningFunction");
+	HPROFILE_TRACE_EVENT("engine", "otherLongRunningFunction");
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 void longRunningFunction()
 {
-	TRACE_EVENT("engine", "longRunningFunction");
+	HPROFILE_TRACE_EVENT("engine", "longRunningFunction");
 	otherLongRunningFunction();
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 }

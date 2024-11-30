@@ -1,7 +1,8 @@
 #pragma once
-#include "Application.h"
-#include "Engine.h"
-#include "Debug/Profiler.h"
+
+#include <Engine/Application.h>
+#include <Engine/Engine.h>
+#include <Debug/Profiler.h>
 
 hive::Application* CreateApplication(hive::Engine &engine);
 

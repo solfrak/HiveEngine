@@ -1,9 +1,4 @@
-//
-// Created by samuel on 8/29/24.
-//
-
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include <hvpch.h>
 
@@ -19,13 +14,10 @@ namespace hive {
         static void init(Logger* logger);
         static void shutdown();
         static void log(const std::string &msg, LogLevel level);
-        virtual bool isCorrect() = 0;
+        [[nodiscard]] virtual bool isCorrect() = 0;
 
     protected:
         virtual void logImpl(const std::string &msg, LogLevel level) = 0;
-
-    private:
-        static URef<Logger> s_instance;
     };
 
 } // hive
@@ -57,5 +49,3 @@ namespace hive {
 #define HLOG_DEBUG(msg)
 #endif
 
-
-#endif //LOGGER_H

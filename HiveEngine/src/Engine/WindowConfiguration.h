@@ -1,20 +1,20 @@
-//
-// Created by samuel on 9/16/24.
-//
-
 #pragma once
 
+#include <hvpch.h>
 #include <bitset>
 
 namespace hive {
-    enum class WindowConfigurationOptions {
+
+    enum class WindowConfigurationOptions 
+    {
         FULLSCREEN,
         CURSOR_DISABLED,
         RESIZABLE
     };
 
-    class HAPI WindowConfiguration {
-    public:
+    class HAPI WindowConfiguration 
+	{
+	public:
         void set(WindowConfigurationOptions flag, bool value);
 
         bool has(WindowConfigurationOptions flag);

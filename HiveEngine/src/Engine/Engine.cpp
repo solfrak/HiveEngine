@@ -1,24 +1,17 @@
-//
-// Created by samuel on 11/22/24.
-//
-
-#include "Engine.h"
+#include <Engine/Engine.h>
+#include <Engine/Logger.h>
+#include <Engine/LoggerFactory.h>
+#include <Debug/Profiler.h>
+#include <Rendering/RenderCommand.h>
 
 #include <thread>
-
-#include "Logger.h"
-#include "LoggerFactory.h"
-#include "raylib.h"
-#include "Debug/Profiler.h"
-#include "Rendering/RenderCommand.h"
+#include <raylib.h>
 
 static hive::Engine* g_engine = nullptr;
 
-
-
 hive::Engine::Engine(int argc, char **argv) : m_Application(nullptr)
 {
-	TRACE_EVENT("engine", "Engine::Engine");
+	HPROFILE_TRACE_EVENT("engine", "Engine::Engine");
 
 	g_engine = this;
 	//TODO: Parse the arguments
@@ -26,14 +19,14 @@ hive::Engine::Engine(int argc, char **argv) : m_Application(nullptr)
 
 void hive::Engine::setApplication(Application *application)
 {
-	TRACE_EVENT("engine", "Engine::setApplication");
+	HPROFILE_TRACE_EVENT("engine", "Engine::setApplication");
 	m_Application = application;
 }
 
 
 void hive::Engine::run()
 {
-	TRACE_EVENT("engine", "Engine::run");
+	HPROFILE_TRACE_EVENT("engine", "Engine::run");
 	while(m_Application->m_Running)
 	{
 		m_Application->onUpdate();
@@ -43,25 +36,24 @@ void hive::Engine::run()
 		m_Application->onRender();
 		RenderCommand::EndFrame();
 	}
-
 	shutdown();
 }
 
 hive::Window& hive::Engine::get_window()
 {
-	TRACE_EVENT("engine", "Engine::get_window");
+	HPROFILE_TRACE_EVENT("engine", "Engine::get_window");
 	return g_engine->m_Window;
 }
 
 hive::Application* hive::Engine::get_application()
 {
-	TRACE_EVENT("engine", "Engine::get_application");
+	HPROFILE_TRACE_EVENT("engine", "Engine::get_application");
 	return g_engine->m_Application;
 }
 
 void hive::Engine::init()
 {
-	TRACE_EVENT("engine", "Engine::init");
+	HPROFILE_TRACE_EVENT("engine", "Engine::init");
 	//TODO: Default is console, Switch to other type based on argument if defined
 	Logger::init(LoggerFactory::Create(LogOutputType::Console));
 
@@ -80,7 +72,7 @@ void hive::Engine::init()
 
 void hive::Engine::shutdown()
 {
-	TRACE_EVENT("engine", "Engine::shutdown");
+	HPROFILE_TRACE_EVENT("engine", "Engine::shutdown");
 
 	m_Application->onShutdown();
 

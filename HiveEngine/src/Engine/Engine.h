@@ -1,9 +1,9 @@
 #pragma once
 #include <hvpch.h>
-#include "Application.h"
-#include "Window.h"
-#include "Rendering/Renderer2D.h"
-#include "Rendering/Renderer3D.h"
+#include <Engine/Application.h>
+#include <Engine/Window.h>
+#include <Rendering/Renderer2D.h>
+#include <Rendering/Renderer3D.h>
 
 namespace hive
 {
@@ -15,11 +15,12 @@ namespace hive
 		void init();
 		void run();
 
-		static Window& get_window();
-		static Application* get_application();
+		[[nodiscard]] static Window& get_window();
+		[[nodiscard]] static Application* get_application();
 	private:
 		void shutdown();
 
+	private:
 		Window m_Window;
 		Application* m_Application = nullptr;
 

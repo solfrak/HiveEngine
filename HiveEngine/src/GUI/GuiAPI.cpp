@@ -1,7 +1,4 @@
-#include "GuiAPI.h"
-#include "GuiRenderCommand.h"
-
-#include "Ressource/Memory.h"
+#include <GUI/GuiAPI.h>
 
 //Utils functions
 size_t stringToHash(const std::string& str)
@@ -29,7 +26,7 @@ hive::gui::GuiContext* hive::gui::Initialize()
 
 void hive::gui::Shutdown(GuiContext *&ctx)
 {
-	hfree(sizeof(GuiContext), ctx);
+	delete ctx;
 }
 
 void hive::gui::BeginFrame(GuiContext* ctx)
@@ -129,6 +126,25 @@ void hive::gui::Label(GuiContext *ctx, const char *label, Vec2i position)
 	}
 
 	pushRenderCommand(ctx, label_command);
+}
+
+HAPI void hive::gui::Image(GuiContext* ctx, Texture* texture, Vec2i position, Vec2i size)
+{
+	GuiRenderCommand image_command = {};
+	image_command.type = GuiRenderCommandType::Image;
+	image_command.image.texture = texture;
+	image_command.image.size = size;
+	if (!ctx->containerStack.empty())
+	{
+		Container* c = ctx->containerStack.top();
+		image_command.image.position = { c->rect.position.x + position.x, c->rect.position.y + position.y };
+	}
+	else
+	{
+		image_command.image.position = position;
+	}
+
+	pushRenderCommand(ctx, image_command);
 }
 
 hive::gui::GuiRenderCommand * hive::gui::GetRenderCommand(GuiContext *ctx, int &size)

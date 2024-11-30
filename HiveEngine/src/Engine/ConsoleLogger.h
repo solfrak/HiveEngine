@@ -1,21 +1,16 @@
-//
-// Created by samuel on 8/29/24.
-//
+#pragma once
 
-#ifndef CONSOLELOGGER_H
-#define CONSOLELOGGER_H
-#include <iostream>
-
-#include "Logger.h"
+#include <Engine/Logger.h>
 
 namespace hive {
 
-    class ConsoleLogger final : public Logger {
+    class ConsoleLogger final : public Logger 
+    {
     public:
-        explicit ConsoleLogger();
-        ~ConsoleLogger();
+        ConsoleLogger() = default;
+        ~ConsoleLogger() = default;
 
-        bool isCorrect() override;
+        [[nodiscard]] bool isCorrect() override;
     private:
 
         //Those function is platform specific, it's implementation should be located in platform_console_logger.cpp
@@ -31,4 +26,3 @@ namespace hive {
 
 } // hive
 
-#endif //CONSOLELOGGER_H

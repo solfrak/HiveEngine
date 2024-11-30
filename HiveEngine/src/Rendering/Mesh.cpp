@@ -12,7 +12,7 @@
 
 hive::Mesh::Mesh(const char* path, const char* texture)
 {
-	TRACE_EVENT("engine", "Mesh::Mesh");
+	HPROFILE_TRACE_EVENT("engine", "Mesh::Mesh");
 	Model model = LoadModel(path);
 	Texture2D texture2d = LoadTexture(texture);
 
@@ -27,7 +27,7 @@ hive::Mesh::~Mesh()
 
 void hive::Mesh::draw() const
 {
-	TRACE_EVENT("engine", "Mesh::draw");
+	HPROFILE_TRACE_EVENT("engine", "Mesh::draw");
 	Matrix final_matrix = MatrixRotateXYZ({DEG2RAD * rotation.x, DEG2RAD * rotation.y, DEG2RAD * rotation.z});
 	m_model->transform = final_matrix;
 

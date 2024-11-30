@@ -18,6 +18,9 @@ const int CONSOLE_HEIGHT = SCREEN_HEIGHT * 0.3f;
 
 const int TEXTURE_WIDTH = SCREEN_WIDTH - SCENE_WIDTH;
 const int TEXTURE_HEIGHT = SCREEN_HEIGHT - CONSOLE_HEIGHT;
+
+
+
 class DemoApp : public hive::Application
 {
 public:
@@ -42,6 +45,7 @@ DemoApp::DemoApp(hive::Engine &engine) : Application(engine)
 //Game Logic Here
 void DemoApp::onUpdate()
 {
+	HPROFILE_END_SESSION("application", "DemoApp::onUpdate");
 	if(hive::Engine::get_window().shouldClose())
 	{
 		m_Running = false;
@@ -60,6 +64,9 @@ void DemoApp::onUpdate()
 
 		}
 		hive::gui::EndWindow(ctx);
+
+
+		hive::gui::Image(ctx, &m_renderTexture.color, { SCENE_WIDTH + 1, 0 }, { TEXTURE_WIDTH, TEXTURE_HEIGHT });
 	}
 
 	hive::gui::EndFrame(ctx);
@@ -133,10 +140,13 @@ void DemoApp::onRender()
 			case hive::gui::GuiRenderCommandType::Label:
 				hive::Renderer2D::drawText(commands[i].label.text, commands[i].label.font_size, commands[i].label.position, commands[i].label.color);
 				break;
+
+			case hive::gui::GuiRenderCommandType::Image:
+				hive::Renderer2D::drawTexture(*commands[i].image.texture, {0, 0, commands[i].image.size.x, -commands[i].image.size.y}, commands[i].image.position);
+				break;
 		}
 	}
 
-	hive::Renderer2D::drawTexture(m_renderTexture.color, {0, 0, TEXTURE_WIDTH, -TEXTURE_HEIGHT}, {SCENE_WIDTH + 1, 0});
 }
 
 

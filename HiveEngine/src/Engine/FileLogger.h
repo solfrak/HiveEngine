@@ -1,22 +1,18 @@
-//
-// Created by samuel on 8/30/24.
-//
-
-#ifndef FILELOGGER_H
-#define FILELOGGER_H
-#include "Logger.h"
+#pragma once
+#include <Engine/Logger.h>
 
 #include <fstream>
 #include <string>
 
 namespace hive {
-    class FileLogger final : public Logger {
-    public:
+    class FileLogger final : public Logger 
+	{
+	public:
         explicit FileLogger(const std::string &filePath);
 
         ~FileLogger() override;
 
-        bool isCorrect() override;
+        [[nodiscard]] bool isCorrect() override;
 
     protected:
         void logImpl(const std::string &msg, LogLevel level) override;
@@ -27,4 +23,3 @@ namespace hive {
 
 } // hive
 
-#endif //FILELOGGER_H

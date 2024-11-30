@@ -22,7 +22,7 @@ void hive::Renderer3D::shutdown()
 
 void hive::Renderer3D::beginScene(const Camera3D &cam)
 {
-	TRACE_EVENT("rendering", "Renderer3D::beginScene");
+	HPROFILE_TRACE_EVENT("rendering", "Renderer3D::beginScene");
 	ClearBackground(BLACK);
 	::Camera temp_cam;
 	temp_cam.position = {cam.position.x, cam.position.y, cam.position.z};
@@ -42,7 +42,7 @@ void hive::Renderer3D::endScene()
 
 void hive::Renderer3D::drawMesh(const hive::Mesh& mesh)
 {
-	TRACE_EVENT("rendering", "Renderer3D::drawMesh");
+	HPROFILE_TRACE_EVENT("rendering", "Renderer3D::drawMesh");
 	mesh.draw();
 }
 #endif

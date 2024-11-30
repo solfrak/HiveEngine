@@ -1,15 +1,10 @@
-//
-// Created by samuel on 9/1/24.
-//
-
-#ifndef LOGGINGFACTORY_H
-#define LOGGINGFACTORY_H
-
-#include "Logger.h"
+#pragma once
 
 #include <hvpch.h>
 
-namespace hive {
+namespace hive 
+{
+	class Logger;
 
     enum class LogOutputType {
         Console, File
@@ -21,7 +16,3 @@ namespace hive {
     };
 
 }
-
-
-
-#endif //LOGGINGFACTORY_H

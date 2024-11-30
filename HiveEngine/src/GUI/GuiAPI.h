@@ -1,8 +1,9 @@
 #pragma once
 
-#include "hvpch.h"
-#include "GuiType.h"
-#include "GuiRenderCommand.h"
+#include <hvpch.h>
+#include <GUI/GuiType.h>
+#include <GUI/GuiRenderCommand.h>
+#include <Rendering/Texture.h>
 
 namespace hive
 {
@@ -23,6 +24,7 @@ namespace hive
 
 		//Widget
 		HAPI void Label(GuiContext *ctx, const char* label, Vec2i position);
+		HAPI void Image(GuiContext* ctx, Texture* texture, Vec2i position, Vec2i size);
 
 		//Utils
 		HAPI GuiRenderCommand *GetRenderCommand(GuiContext *ctx, int &size);

@@ -2,20 +2,21 @@
 // Created by GuillaumeIsCoding on 7/26/2024.
 //
 #pragma once
-#include "hvpch.h"
-#include "WindowConfiguration.h"
+#include <hvpch.h>
+#include <Engine/WindowConfiguration.h>
 
 
 namespace hive
 {
+	enum WindowBackend
+	{
+		RAYLIB
+	};
+
     struct WindowNativeData
     {
         void* window_handle;
         size_t sizeof_ptr;
-        enum WindowBackend
-        {
-            RAYLIB
-        };
 
         WindowBackend backend;
     };
@@ -26,13 +27,13 @@ namespace hive
         ~Window();
 
         [[nodiscard]] int getHeight() const;
-        [[nodiscard]] WindowNativeData getNativeWindowData() const;
         [[nodiscard]] int getWidth() const;
-        void onUpdate() const;
-        void setIcon(unsigned char* data, int width, int height) const;
+        [[nodiscard]] WindowNativeData getNativeWindowData() const;
         [[nodiscard]] bool shouldClose() const;
+        [[nodiscard]] WindowConfiguration getConfiguration() const;
+
+        void setIcon(unsigned char* data, int width, int height) const;
         void updateConfiguration(WindowConfiguration configuration);
-        WindowConfiguration getConfiguration() const;
     private:
         WindowConfiguration m_config;
     };

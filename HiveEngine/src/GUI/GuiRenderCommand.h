@@ -1,9 +1,10 @@
 #pragma once
 
-#include "hvpch.h"
-#include "Core/Shape.h"
-#include "Core/Color.h"
-#include "Core/Vector.h"
+#include <hvpch.h>
+#include <Core/Shape.h>
+#include <Core/Color.h>
+#include <Core/Vector.h>
+#include <Rendering/Texture.h>
 
 namespace hive
 {
@@ -11,7 +12,7 @@ namespace hive
 	{
 		enum class GuiRenderCommandType
 		{
-			Rectangle, Label
+			Rectangle, Label, Image
 		};
 
 		struct HAPI GuiRenderCommand
@@ -31,6 +32,13 @@ namespace hive
 				int font_size;
 				ColorRGBA color;
 			} label;
+
+			struct 
+			{
+				Texture *texture;
+				Vec2i position;
+				Vec2i size;
+			} image;
 		};
 
 	}

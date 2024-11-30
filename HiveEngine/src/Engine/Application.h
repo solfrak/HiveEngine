@@ -1,16 +1,10 @@
-//
-// Created by samuel on 11/17/24.
-//
+
 #pragma once
-#include "hvpch.h"
+#include <hvpch.h>
 
 namespace hive
 {
 	class Engine;
-}
-
-namespace hive
-{
 
 	struct HAPI ApplicationConfig
 	{

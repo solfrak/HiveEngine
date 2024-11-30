@@ -1,7 +1,3 @@
-//
-// Created by samuel on 9/16/24.
-//
-
 #include "WindowConfiguration.h"
 
 void hive::WindowConfiguration::set(const WindowConfigurationOptions flag, const bool value) {
