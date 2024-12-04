@@ -4,6 +4,3 @@
 [submodule "HiveEngine/dep/raylib"]
 	path = HiveEngine/dep/raylib
 	url = https://github.com/raysan5/raylib.git
-[submodule "HiveEngine/dep/easy_profiler"]
-	path = HiveEngine/dep/easy_profiler
-	url = https://github.com/yse/easy_profiler.git
