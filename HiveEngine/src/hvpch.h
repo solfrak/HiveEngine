@@ -17,8 +17,10 @@ using f64 = double;
 
 #ifdef _WIN64
     #define HIVE_PLATFORM_WINDOWS
+    #define HIVE_WINDOWING_RAYLIB
 #endif
 
 #ifdef __linux__
     #define HIVE_PLATFORM_LINUX
+    #define HIVE_WINDOWING_RAYLIB
 #endif
