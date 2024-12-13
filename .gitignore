@@ -1,13 +1,3 @@
-# Build directories 
 cmake-build-debug/
-cmake-build-release/
-cmake-build-debug-coverage/
-build/
-
-# Vscode directories
-.vscode/
-.vs/
-out/
-
-
+cmake-build-debug-visual-studio/
 .idea/
