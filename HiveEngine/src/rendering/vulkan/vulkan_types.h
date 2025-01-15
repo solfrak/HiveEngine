@@ -1,7 +1,9 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <vector>
-#include <glm/glm.hpp>
+
+
+
 namespace hive::vk
 {
     struct VulkanDevice
@@ -18,6 +20,15 @@ namespace hive::vk
         VkCommandPool graphics_command_pool;
     };
 
+    struct VulkanImage
+    {
+        VkImage vk_image;
+        VkDeviceMemory vk_image_memory;
+        VkImageView vk_image_view;
+        VkSampler vk_sampler;
+    };
+
+
     struct VulkanSwapchain
     {
         VkSwapchainKHR vk_swapchain;
@@ -27,23 +38,14 @@ namespace hive::vk
         //TODO: use vector of VulkanImage instead
         std::vector<VkImage> images;
         std::vector<VkImageView> image_views;
+
+        VulkanImage depth_image;
     };
 
     struct VulkanFramebuffer
     {
         std::vector<VkFramebuffer> framebuffers;
     };
-
-
-    class VulkanDescriptorSetLayout;
-    struct VulkanPipeline
-    {
-        VkPipeline vk_pipeline;
-        VkPipelineLayout pipeline_layout;
-        VulkanDescriptorSetLayout *layout;
-    };
-
-
 
     struct VulkanBuffer
     {
@@ -52,12 +54,27 @@ namespace hive::vk
         void* map;
     };
 
-    struct VulkanImage
+    class VulkanDescriptorPool;
+    class VulkanDescriptorSetLayout;
+    struct VulkanPipeline
     {
-        VkImage vk_image;
-        VkDeviceMemory vk_image_memory;
-        VkImageView vk_image_view;
-        VkSampler vk_sampler;
+        VkPipeline vk_pipeline;
+        VkPipelineLayout pipeline_layout;
+
+        //We assume the pipeline has a ubo at binding 0
+        //We assume the pipeline has a sampler2d at binding 1
+        VulkanImage *texture_buffers;
+        VulkanBuffer *ubos;
+
+        VulkanDescriptorPool *pool;
+        VulkanDescriptorSetLayout *layout;
+
+        std::vector<VkDescriptorSet> descriptor_sets;
+
     };
+
+
+
+
 
 }

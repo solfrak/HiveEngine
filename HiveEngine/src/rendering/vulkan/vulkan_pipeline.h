@@ -3,33 +3,30 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+
 namespace hive::vk
 {
     struct VulkanDevice;
     struct VulkanPipeline;
+    struct VulkanImage;
+    struct VulkanBuffer;
 
-
-     bool create_graphics_pipeline(const VulkanDevice &device,
+    bool create_graphics_pipeline(const VulkanDevice &device,
                                   const VkRenderPass &render_pass,
                                   VkPipelineShaderStageCreateInfo *stages,
                                   u32 stages_count,
-                                  VulkanDescriptorSetLayout *layout,
+                                  u32 frame_in_flight,
+                                  VkPolygonMode mode,
                                   VulkanPipeline &pipeline);
 
     void destroy_graphics_pipeline(const VulkanDevice &device, VulkanPipeline &pipeline);
 
-    struct Vertex {
-        glm::vec2 pos;
-        glm::vec3 color;
-        glm::vec2 texCoord;
-    };
+    void pipeline_update_texture_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
+                                        VulkanImage *images);
 
-    struct UniformBufferObject
-    {
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
-    };
+    void pipeline_update_ubo_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
+                                    VulkanBuffer *buffers);
+
 
 
 
