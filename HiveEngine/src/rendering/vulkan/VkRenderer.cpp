@@ -1,4 +1,5 @@
 #include <rendering/RendererPlatform.h>
+#include <rendering/ShaderLayout.h>
 
 #ifdef HIVE_BACKEND_VULKAN_SUPPORTED
 #include <array>
@@ -29,7 +30,7 @@
 #include "vulkan_image.h"
 
 
-hive::vk::VkRenderer::VkRenderer(const Window& window) : shaders_manager_(16), ubos_manager_(16)
+hive::vk::VkRenderer::VkRenderer(const Window& window) : ubos_manager_(16)
 {
     if(!create_instance(instance_, window)) return;
     if(config::enable_validation && !setup_debug_messenger(instance_, debugMessenger)) return;
@@ -315,8 +316,8 @@ hive::ShaderProgramHandle hive::vk::VkRenderer::createShader(const char *vertex_
     UniformBufferObjectHandle ubo, u32 mode)
 {
 
-    auto shader = shaders_manager_.getAvailableId();
-    auto& shader_data = shaders_manager_.getData(shader);
+    auto shader = resource_manager_.allocShader();
+    auto& shader_data = resource_manager_.getPipeline(shader);
 
     VkShaderModule vert_module;
     VkShaderModule frag_module;
@@ -357,14 +358,13 @@ hive::ShaderProgramHandle hive::vk::VkRenderer::createShader(const char *vertex_
 
 void hive::vk::VkRenderer::destroyShader(ShaderProgramHandle shader)
 {
-    pipelines_destroy_queue_.push_back(shader);
-
+    resource_manager_.destroyShader(shader);
     shader.id = U32_MAX;
 }
 
 void hive::vk::VkRenderer::useShader(ShaderProgramHandle shader)
 {
-    auto &shader_data = shaders_manager_.getData(shader);
+    auto &shader_data = resource_manager_.getPipeline(shader);
     vkCmdBindPipeline(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, shader_data.vk_pipeline);
     vkCmdBindDescriptorSets(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, shader_data.pipeline_layout, 0, 1, &shader_data.descriptor_sets[current_frame_], 0, nullptr);
     shader_data.last_frame_used = current_frame_;
@@ -404,21 +404,8 @@ void hive::vk::VkRenderer::destroyUbo(UniformBufferObjectHandle handle)
 
 void hive::vk::VkRenderer::processDestroyItems(bool force)
 {
-    //Shaders
-    std::vector<u32> item_destroyed;
-    for (u32 i = 0; i < pipelines_destroy_queue_.size(); i++)
-    {
-        auto &shader_data = shaders_manager_.getData(pipelines_destroy_queue_[i]);
-        if (!force && shader_data.last_frame_used != current_frame_) continue;
+    resource_manager_.processShaderDestroy(device_, current_frame_, force);
 
-        destroy_graphics_pipeline(device_, shader_data);
-        shaders_manager_.clearData(pipelines_destroy_queue_[i]);
-        item_destroyed.push_back(i);
-    }
-    for (auto i : item_destroyed)
-    {
-        pipelines_destroy_queue_.erase(pipelines_destroy_queue_.begin() + i);
-    }
 }
 
 

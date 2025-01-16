@@ -1,5 +1,5 @@
 #pragma once
-
+#include <hvpch.h>
 namespace hive
 {
     enum class STAGE_LOCATION

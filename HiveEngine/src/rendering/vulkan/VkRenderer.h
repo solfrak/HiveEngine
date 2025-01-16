@@ -5,6 +5,8 @@
 #include "vulkan_types.h"
 #include <core/RessourceManager.h>
 
+#include "vulkan_ressource_manager.h"
+
 namespace hive
 {
     struct Vertex;
@@ -60,8 +62,8 @@ namespace hive::vk
         VulkanSwapchain swapchain_{};
         VkRenderPass render_pass_{};
         VulkanFramebuffer framebuffer_{};
+        VulkanResourceManager resource_manager_{};
 
-        std::vector<ShaderProgramHandle> pipelines_destroy_queue_{};
 
         static constexpr u32 MAX_FRAME_IN_FLIGHT = 3;
         VkCommandBuffer command_buffers_[MAX_FRAME_IN_FLIGHT] {};
@@ -71,7 +73,6 @@ namespace hive::vk
         VkFence fence_in_flight_[MAX_FRAME_IN_FLIGHT] {};
 
 
-        RessourceManager<VulkanPipeline, ShaderProgramHandle> shaders_manager_;
         RessourceManager<std::array<VulkanBuffer, MAX_FRAME_IN_FLIGHT>, UniformBufferObjectHandle> ubos_manager_;
 
         //Temporary
