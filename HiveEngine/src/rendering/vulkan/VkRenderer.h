@@ -43,6 +43,9 @@ namespace hive::vk
         void updateUbo(UniformBufferObjectHandle handle, const UniformBufferObject &ubo) override;
         void destroyUbo(UniformBufferObjectHandle handle) override;
 
+    private:
+        void processDestroyItems(bool force = false);
+
     protected:
         bool is_ready_ = false;
         u32 current_frame_ = 0;
@@ -57,6 +60,8 @@ namespace hive::vk
         VulkanSwapchain swapchain_{};
         VkRenderPass render_pass_{};
         VulkanFramebuffer framebuffer_{};
+
+        std::vector<ShaderProgramHandle> pipelines_destroy_queue_{};
 
         static constexpr u32 MAX_FRAME_IN_FLIGHT = 3;
         VkCommandBuffer command_buffers_[MAX_FRAME_IN_FLIGHT] {};
@@ -80,4 +85,5 @@ namespace hive::vk
 
 
     };
+
 }

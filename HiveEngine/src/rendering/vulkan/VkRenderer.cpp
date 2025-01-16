@@ -1,7 +1,5 @@
 #include <rendering/RendererPlatform.h>
 
-
-
 #ifdef HIVE_BACKEND_VULKAN_SUPPORTED
 #include <array>
 #include <core/Logger.h>
@@ -110,6 +108,7 @@ hive::vk::VkRenderer::VkRenderer(const Window& window) : shaders_manager_(16), u
 hive::vk::VkRenderer::~VkRenderer()
 {
     vkDeviceWaitIdle(device_.logical_device);
+    processDestroyItems(true);
     //Temporary
     {
         destroy_image(device_, texture_image_);
@@ -222,6 +221,7 @@ bool hive::vk::VkRenderer::beginDrawing()
     vkWaitForFences(device_.logical_device, 1, &fence_in_flight_[current_frame_], VK_TRUE, UINT64_MAX);
     vkResetFences(device_.logical_device, 1, &fence_in_flight_[current_frame_]);
 
+    processDestroyItems();
     vkAcquireNextImageKHR(device_.logical_device, swapchain_.vk_swapchain, UINT64_MAX, sem_image_available_[current_frame_], VK_NULL_HANDLE, &image_index_);
 
     vkResetCommandBuffer(command_buffers_[current_frame_], /*VkCommandBufferResetFlagBits*/ 0);
@@ -305,6 +305,7 @@ bool hive::vk::VkRenderer::frame()
 
     current_frame_ = (current_frame_ + 1) % MAX_FRAME_IN_FLIGHT;
 
+
     return true;
 }
 
@@ -356,11 +357,9 @@ hive::ShaderProgramHandle hive::vk::VkRenderer::createShader(const char *vertex_
 
 void hive::vk::VkRenderer::destroyShader(ShaderProgramHandle shader)
 {
-    //TODO: find a way to make sure the shader is not in used
-    vkDeviceWaitIdle(device_.logical_device);
+    pipelines_destroy_queue_.push_back(shader);
 
-    auto& shader_data = shaders_manager_.getData(shader);
-    destroy_graphics_pipeline(device_, shader_data);
+    shader.id = U32_MAX;
 }
 
 void hive::vk::VkRenderer::useShader(ShaderProgramHandle shader)
@@ -368,6 +367,7 @@ void hive::vk::VkRenderer::useShader(ShaderProgramHandle shader)
     auto &shader_data = shaders_manager_.getData(shader);
     vkCmdBindPipeline(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, shader_data.vk_pipeline);
     vkCmdBindDescriptorSets(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, shader_data.pipeline_layout, 0, 1, &shader_data.descriptor_sets[current_frame_], 0, nullptr);
+    shader_data.last_frame_used = current_frame_;
 }
 
 hive::UniformBufferObjectHandle hive::vk::VkRenderer::createUbo()
@@ -401,6 +401,26 @@ void hive::vk::VkRenderer::destroyUbo(UniformBufferObjectHandle handle)
         destroy_buffer(device_, ubo_data[i]);
     }
 }
+
+void hive::vk::VkRenderer::processDestroyItems(bool force)
+{
+    //Shaders
+    std::vector<u32> item_destroyed;
+    for (u32 i = 0; i < pipelines_destroy_queue_.size(); i++)
+    {
+        auto &shader_data = shaders_manager_.getData(pipelines_destroy_queue_[i]);
+        if (!force && shader_data.last_frame_used != current_frame_) continue;
+
+        destroy_graphics_pipeline(device_, shader_data);
+        shaders_manager_.clearData(pipelines_destroy_queue_[i]);
+        item_destroyed.push_back(i);
+    }
+    for (auto i : item_destroyed)
+    {
+        pipelines_destroy_queue_.erase(pipelines_destroy_queue_.begin() + i);
+    }
+}
+
 
 
 #endif

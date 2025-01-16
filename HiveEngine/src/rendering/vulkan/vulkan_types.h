@@ -71,6 +71,8 @@ namespace hive::vk
 
         std::vector<VkDescriptorSet> descriptor_sets;
 
+        u32 last_frame_used = 0;
+
     };
 
 

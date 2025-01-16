@@ -58,7 +58,11 @@ void hive::Application::run()
         if (end_time - begin_time > std::chrono::milliseconds(3000))
         {
             begin_time = end_time;
-            current_shader = (current_shader + 1) % 3;
+
+            renderer_->destroyShader(handles[current_shader]);
+            current_shader = current_shader + 1;
+            if (current_shader >= 3)
+                break;
         }
         update_camera(*renderer_, ubo_handle);
 
@@ -70,9 +74,4 @@ void hive::Application::run()
         if (!renderer_->frame()) break;
     }
     renderer_->destroyUbo(ubo_handle);
-
-    for (i32 i = 0; i < 3; ++i)
-    {
-        renderer_->destroyShader(handles[i]);
-    }
 }
