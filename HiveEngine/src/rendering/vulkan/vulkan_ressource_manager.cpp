@@ -24,20 +24,35 @@ void hive::vk::VulkanResourceManager::destroyShader(ShaderProgramHandle shader)
     shader_to_destroy_.push_back(shader);
 }
 
-void hive::vk::VulkanResourceManager::processShaderDestroy(const VulkanDevice &device, const u32 current_frame, const bool force)
+void hive::vk::VulkanResourceManager::processShaderDestroy(const VulkanDevice &device, const u32 current_frame, const bool force_all)
 {
-    std::vector<u32> item_destroyed;
-    for (u32 i = 0; i < shader_to_destroy_.size(); i++)
+    if (force_all)
     {
-        auto &shader_data = getPipeline(shader_to_destroy_[i]);
-        if (!force && shader_data.last_frame_used != current_frame) continue;
-
-        destroy_graphics_pipeline(device, shader_data);
-        shaders_.clearData(shader_to_destroy_[i]);
-        item_destroyed.push_back(i);
+        for (u32 i = 0; i < shaders_.size(); i++)
+        {
+            auto &shader_data = getPipeline({i});
+            if (shader_data.vk_pipeline != VK_NULL_HANDLE)
+            {
+                destroy_graphics_pipeline(device, shader_data);
+                shaders_.clearData({i});
+            }
+        }
     }
-    for (auto i: item_destroyed)
+    else
     {
-        shader_to_destroy_.erase(shader_to_destroy_.begin() + i);
+        std::vector<u32> item_destroyed;
+        for (u32 i = 0; i < shader_to_destroy_.size(); i++)
+        {
+            auto &shader_data = getPipeline(shader_to_destroy_[i]);
+            if (shader_data.last_frame_used != current_frame) continue;
+
+            destroy_graphics_pipeline(device, shader_data);
+            shaders_.clearData(shader_to_destroy_[i]);
+            item_destroyed.push_back(i);
+        }
+        for (auto i: item_destroyed)
+        {
+            shader_to_destroy_.erase(shader_to_destroy_.begin() + i);
+        }
     }
 }

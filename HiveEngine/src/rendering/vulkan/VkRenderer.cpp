@@ -405,7 +405,6 @@ void hive::vk::VkRenderer::destroyUbo(UniformBufferObjectHandle handle)
 void hive::vk::VkRenderer::processDestroyItems(bool force)
 {
     resource_manager_.processShaderDestroy(device_, current_frame_, force);
-
 }
 
 

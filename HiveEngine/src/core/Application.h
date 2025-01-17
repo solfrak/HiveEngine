@@ -23,15 +23,18 @@ namespace hive
     public:
         explicit Application(ApplicationConfig &config);
 
-        ~Application();
-
+        virtual ~Application();
         void run();
 
+    protected:
+        virtual bool on_init() = 0;
+        virtual bool on_update(float delta_time) = 0;
+        virtual bool on_destroy() = 0;
 
-    private:
         Memory memory_;
         Window window_;
         IRenderer* renderer_;
+        bool app_should_close_ = false;
         // vk::VulkanRenderer renderer_;
     };
 }

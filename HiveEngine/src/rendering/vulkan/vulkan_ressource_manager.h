@@ -14,7 +14,7 @@ namespace hive::vk
         ShaderProgramHandle allocShader();
         VulkanPipeline &getPipeline(ShaderProgramHandle shader);
         void destroyShader(ShaderProgramHandle shader);
-        void processShaderDestroy(const VulkanDevice &device, u32 current_frame, bool force);
+        void processShaderDestroy(const VulkanDevice &device, u32 current_frame, bool force_all);
 
     private:
         RessourceManager<VulkanPipeline, ShaderProgramHandle> shaders_;
