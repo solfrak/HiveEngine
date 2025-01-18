@@ -1,7 +1,6 @@
 #pragma once
 #include <optional>
-#include <rendering/Renderer.h>
-#include <rendering/vulkan/VkRenderer.h>
+#include <rendering/GraphicsDevice.h>
 
 #include "core/Memory.h"
 #include "core/Logger.h"
@@ -14,14 +13,13 @@ namespace hive
     {
         Logger::LogLevel log_level;
         WindowConfig window_config;
-        RendererConfig render_config;
     };
 
 
     class Application
     {
     public:
-        explicit Application(ApplicationConfig &config);
+        explicit Application(const ApplicationConfig &config);
 
         virtual ~Application();
         void run();
@@ -33,8 +31,8 @@ namespace hive
 
         Memory memory_;
         Window window_;
-        IRenderer* renderer_;
+        GraphicsDevice *device_ = nullptr;
+
         bool app_should_close_ = false;
-        // vk::VulkanRenderer renderer_;
     };
 }

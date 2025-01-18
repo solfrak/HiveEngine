@@ -18,10 +18,10 @@ target_link_libraries(hive PRIVATE glm-header-only)
 target_include_directories(hive PUBLIC dep/glm)
 
 #stb
-target_include_directories(hive PRIVATE dep/stb_image)
+target_include_directories(hive PUBLIC dep/stb_image)
 
 #tinyobjloader
-target_include_directories(hive PRIVATE dep/tinyobjloader)
+target_include_directories(hive PUBLIC dep/tinyobjloader)
 
 #Vulkan
 if(WIN32)

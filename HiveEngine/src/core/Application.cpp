@@ -1,22 +1,18 @@
 #include "Application.h"
-#include <rendering/Renderer.h>
-#include <rendering/RendererFactory.h>
+#include <rendering/vulkan/GraphicsDeviceVulkan.h>
 
 #include <chrono>
 #include <stdexcept>
 
-hive::Application::Application(ApplicationConfig &config) : memory_(), window_(config.window_config), renderer_(nullptr)
+hive::Application::Application(const ApplicationConfig &config) : memory_(), window_(config.window_config), device_(nullptr)
 {
-    config.render_config.window = &window_;
-    if (!RendererFactory::createRenderer(config.render_config, &renderer_))
-    {
-        throw std::runtime_error("Failed to create renderer");
-    }
+
+    device_ = Memory::createObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(window_);
 }
 
 hive::Application::~Application()
 {
-    RendererFactory::destroyRenderer(renderer_);
+    Memory::destroyObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(device_);
 }
 
 
