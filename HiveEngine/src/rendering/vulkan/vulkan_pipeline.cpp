@@ -21,28 +21,28 @@ namespace hive::vk
                                   VkPolygonMode mode,
                                   VulkanPipeline &pipeline)
     {
-        //Descriptor
-        pipeline.pool = VulkanDescriptorPool::Builder(device)
-                .setMaxtSets(frame_in_flight)
-                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, frame_in_flight)
-                .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frame_in_flight)
-                .build();
-
-        if(!pipeline.pool->isReady())
-        {
-            return false;
-        }
-
-        pipeline.layout = VulkanDescriptorSetLayout::Builder(device)
-                .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 1)
-                .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
-                .build();
-
-        pipeline.descriptor_sets.resize(frame_in_flight);
-        for(i32 i = 0; i < frame_in_flight; i++)
-        {
-            pipeline.pool->allocateDescriptor(pipeline.layout->getDescriptorSetLayout(), pipeline.descriptor_sets[i]);
-        }
+        // //Descriptor
+        // pipeline.pool = VulkanDescriptorPool::Builder(device)
+        //         .setMaxtSets(frame_in_flight)
+        //         .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, frame_in_flight)
+        //         .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, frame_in_flight)
+        //         .build();
+        //
+        // if(!pipeline.pool->isReady())
+        // {
+        //     return false;
+        // }
+        //
+        // pipeline.layout = VulkanDescriptorSetLayout::Builder(device)
+        //         .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 1)
+        //         .addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+        //         .build();
+        //
+        // pipeline.descriptor_sets.resize(frame_in_flight);
+        // for(i32 i = 0; i < frame_in_flight; i++)
+        // {
+        //     pipeline.pool->allocateDescriptor(pipeline.layout->getDescriptorSetLayout(), pipeline.descriptor_sets[i]);
+        // }
 
 
 

@@ -18,20 +18,20 @@ target_link_libraries(hive PRIVATE glm-header-only)
 target_include_directories(hive PUBLIC dep/glm)
 
 #stb
-target_include_directories(hive PRIVATE dep/stb_image)
+target_include_directories(hive PUBLIC dep/stb_image)
 
 #tinyobjloader
-target_include_directories(hive PRIVATE dep/tinyobjloader)
+target_include_directories(hive PUBLIC dep/tinyobjloader)
 
 #Vulkan
 if(WIN32)
     set(DEFAULT_VULKAN_SDK_PATH "C:/VulkanSDK/1.x.x.x")
     set(VULKAN_LIB_NAME vulkan-1)
 elseif(UNIX)
+    #Linux should have a vulkan package that install it in the correct location
     set(DEFAULT_VULKAN_SDK_PATH "")
     set(VULKAN_LIB_NAME vulkan)
 
-#    Linux should have a vulkan package that install it in the correct location
 else()
     message(FATAL_ERROR "Unsupported platform for Vulkan SDK.")
 endif()
