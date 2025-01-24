@@ -61,6 +61,8 @@ namespace hive::vk
             vkMapMemory(device.logical_device, out_buffer.vk_buffer_memory, 0, size, 0, &out_buffer.map);
         }
 
+        out_buffer.size = size;
+
         return true;
     }
 

@@ -13,6 +13,12 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <rendering/vulkan/GraphicsDeviceVulkan.h>
+#include <rendering/vulkan/vulkan_buffer.h>
+#include <rendering/vulkan/vulkan_image.h>
+#include <rendering/vulkan/vulkan_pipeline.h>
+#include <rendering/vulkan/vulkan_shader.h>
+#include <rendering/vulkan/vulkan_types.h>
 
 void RegisterDefaultLoggerSync(hive::Logger::LogLevel level)
 {
@@ -40,101 +46,64 @@ protected:
     void load_model();
 
 private:
-    hive::UniformBufferObjectHandle ubo_handle;
-    hive::ShaderProgramHandle handles[3];
-    i32 current_shader = 0;
-    std::chrono::time_point<std::chrono::system_clock> begin_time;
-
-
-    hive::Buffer vertex_buffer;
-    hive::Buffer index_buffer;
-    hive::Buffer ubo_buffer;
-    hive::Texture texture;
-
     std::vector<hive::Vertex> vertices;
     std::vector<u32> indices;
 
-    hive::Pipeline pipeline_;
+    struct VikingRoom
+    {
+        hive::vk::VulkanBuffer vertex_buffer_{};
+        hive::vk::VulkanBuffer index_buffer{};
+
+        hive::vk::VulkanImage texture{};
+
+    } viking_room{};
+
+
+    hive::vk::VulkanBuffer ubo_buffer{};
+
+    hive::vk::VulkanPipeline default_pipeline_{};
 };
 
 
 bool BasicApp::on_init()
 {
-    // ubo_handle = renderer_->createUbo();
-    // for (i32 i = 0; i < 3; ++i)
-    // {
-    //     handles[i] = renderer_->createShader("shaders/vert.spv", "shaders/frag.spv", ubo_handle, i);
-    // }
-
+    // // ubo_handle = renderer_->createUbo();
+    // // for (i32 i = 0; i < 3; ++i)
+    // // {
+    // //     handles[i] = renderer_->createShader("shaders/vert.spv", "shaders/frag.spv", ubo_handle, i);
+    // // }
+    //
     load_model();
-
-    //Vertex buffer creation
+    //
+    // //Vertex buffer creation
+    // {
     {
-        hive::BufferDesc temp_desc{};
-        temp_desc.usage_flag = hive::BufferDesc::UsageFlag::TRANSFER_SRC;
-        temp_desc.mem_prop_flags = hive::BufferDesc::MemoryType::HOST_VISIBLE | hive::BufferDesc::HOST_COHERENT;
-        temp_desc.size = sizeof(vertices[0]) * vertices.size();
+        hive::vk::VulkanBuffer temp_buffer{};
 
-        hive::Buffer temp_buffer;
-        if (!device_->CreateBuffer(temp_desc, temp_buffer))
-        {
-            return false;
-        }
-        device_->FillBuffer(temp_buffer, vertices.data(), temp_desc.size);
+        u32 size  = sizeof(vertices[0]) * vertices.size();
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, size, temp_buffer);
+        hive::vk::buffer_fill_data(device_vulkan_->getDevice(), temp_buffer, vertices.data(), size);
 
-        hive::BufferDesc vertex_buffer_desc{};
-        vertex_buffer_desc.usage_flag = hive::BufferDesc::UsageFlag::TRANSFER_DST |
-                                        hive::BufferDesc::UsageFlag::VERTEX_BUFFER;
-        vertex_buffer_desc.mem_prop_flags = hive::BufferDesc::MemoryType::DEVICE_LOCAL;
-        vertex_buffer_desc.size = temp_desc.size;
-
-        if (!device_->CreateBuffer(vertex_buffer_desc, vertex_buffer))
-        {
-            return false;
-        }
-
-        device_->CopyBuffer(temp_buffer, vertex_buffer);
-        device_->DestroyBuffer(temp_buffer);
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, size, viking_room.vertex_buffer_);
+        hive::vk::buffer_copy(device_vulkan_->getDevice(), temp_buffer, viking_room.vertex_buffer_, size);
+        hive::vk::destroy_buffer(device_vulkan_->getDevice(), temp_buffer);
     }
 
     //Index buffer
     {
-        hive::BufferDesc temp_desc{};
-        temp_desc.usage_flag = hive::BufferDesc::UsageFlag::TRANSFER_SRC;
-        temp_desc.mem_prop_flags = hive::BufferDesc::MemoryType::HOST_VISIBLE | hive::BufferDesc::MemoryType::HOST_COHERENT;
-        temp_desc.size = indices.size() * sizeof(indices[0]);
+        hive::vk::VulkanBuffer temp_buffer{};
+        u32 size = sizeof(indices[0]) * indices.size();
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, size, temp_buffer);
+        hive::vk::buffer_fill_data(device_vulkan_->getDevice(), temp_buffer, indices.data(), size);
 
-        hive::Buffer temp_buffer{};
-        if(!device_->CreateBuffer(temp_desc, temp_buffer))
-        {
-            return false;
-        }
-        device_->FillBuffer(temp_buffer, indices.data(), temp_desc.size);
-        hive::BufferDesc index_buffer_desc{};
-        index_buffer_desc.usage_flag = hive::BufferDesc::UsageFlag::TRANSFER_DST | hive::BufferDesc::UsageFlag::INDEX_BUFFER;
-        index_buffer_desc.mem_prop_flags = hive::BufferDesc::MemoryType::DEVICE_LOCAL;
-        index_buffer_desc.size = indices.size() * sizeof(indices[0]);
-        if(!device_->CreateBuffer(index_buffer_desc, index_buffer))
-        {
-            return false;
-        }
-        device_->CopyBuffer(temp_buffer, index_buffer);
-        device_->DestroyBuffer(temp_buffer);
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, size, viking_room.index_buffer);
+        hive::vk::buffer_copy(device_vulkan_->getDevice(), temp_buffer, viking_room.index_buffer, size);
+        hive::vk::destroy_buffer(device_vulkan_->getDevice(), temp_buffer);
     }
-
     //Ubo buffer
     {
-        hive::BufferDesc ubo_desc{};
-        ubo_desc.usage_flag = hive::BufferDesc::UsageFlag::UNIFORM_BUFFER;
-        ubo_desc.mem_prop_flags = hive::BufferDesc::MemoryType::HOST_VISIBLE | hive::BufferDesc::MemoryType::HOST_COHERENT;
-        ubo_desc.size = sizeof(hive::UniformBufferObject);
-
-        if(!device_->CreateBuffer(ubo_desc, ubo_buffer))
-        {
-            return false;
-        }
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, sizeof(hive::UniformBufferObject), ubo_buffer);
     }
-
     //Texture image
     {
         i32 texWidth, texHeight, texChannels;
@@ -146,103 +115,106 @@ bool BasicApp::on_init()
             return false;
         }
 
-        hive::BufferDesc temp_text_desc{};
-        temp_text_desc.usage_flag = hive::BufferDesc::UsageFlag::TRANSFER_SRC;
-        temp_text_desc.mem_prop_flags = hive::BufferDesc::MemoryType::HOST_VISIBLE | hive::BufferDesc::MemoryType::HOST_COHERENT;
-        temp_text_desc.size = image_size;
-
-        hive::Buffer temp_texture_buffer{};
-        if(!device_->CreateBuffer(temp_text_desc, temp_texture_buffer))
-        {
-            return false;
-        }
-        device_->FillBuffer(temp_texture_buffer, pixels, image_size);
+        hive::vk::VulkanBuffer temp_buffer{};
+        hive::vk::create_buffer(device_vulkan_->getDevice(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, image_size, temp_buffer);
+        hive::vk::buffer_fill_data(device_vulkan_->getDevice(), temp_buffer, pixels, image_size);
         stbi_image_free(pixels);
 
-        hive::TextureDesc texture_desc{};
-        texture_desc.width = texWidth;
-        texture_desc.heigth = texHeight;
-        texture_desc.nbr_channels = texChannels;
-        texture_desc.format = hive::TextureDesc::Format::R8G8B8A8_SRGB;
+        hive::vk::create_image(device_vulkan_->getDevice(), texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB,
+                               VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, viking_room.texture);
 
-        if (!device_->CreateTexture(texture_desc, temp_texture_buffer, texture))
-        {
-            return false;
-        }
+        hive::vk::transition_image_layout(device_vulkan_->getDevice(), VK_FORMAT_R8G8B8A8_SRGB,
+                                          VK_IMAGE_LAYOUT_UNDEFINED,
+                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, viking_room.texture);
+        hive::vk::copy_buffer_to_image(device_vulkan_->getDevice(), temp_buffer, viking_room.texture, texWidth,
+                                       texHeight);
+        hive::vk::transition_image_layout(device_vulkan_->getDevice(), VK_FORMAT_R8G8B8A8_SRGB,
+                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, viking_room.texture);
 
-        device_->DestroyBuffer(temp_texture_buffer);
+        hive::vk::destroy_buffer(device_vulkan_->getDevice(), temp_buffer);
     }
-
     //Pipeline
     {
-        hive::ShaderDesc vert_desc{};
-        vert_desc.path = "shaders/vert.spv";
-        vert_desc.stage = hive::ShaderStage::VERTEX;
+        VkShaderModule vertex_module;
+        hive::vk::create_shader_module(device_vulkan_->getDevice(), "shaders/vert.spv", vertex_module);
 
-        hive::Shader vert_module{};
-        if(!device_->CreateShader(vert_desc, vert_module))
-        {
-            return false;
-        }
+        VkShaderModule frag_module;
+        hive::vk::create_shader_module(device_vulkan_->getDevice(), "shaders/frag.spv", frag_module);
 
-
-        hive::ShaderDesc frag_desc{};
-        frag_desc.path = "shaders/frag.spv";
-        frag_desc.stage = hive::ShaderStage::FRAGMENT;
-
-        hive::Shader frag_module{};
-        if(!device_->CreateShader(frag_desc, frag_module))
-        {
-            return false;
-        }
-
-        hive::PipelineDesc pipeline_desc{};
-        pipeline_desc.cull_mode = hive::PipelineDesc::CullMode::FILL;
-        pipeline_desc.shaders_stages.push_back(vert_module);
-        pipeline_desc.shaders_stages.push_back(frag_module);
+        hive::vk::PipelineDesc pipeline_desc{};
+        pipeline_desc.shaders_stages.push_back({vertex_module, hive::vk::ShaderModule::ShaderStage::VERTEX});
+        pipeline_desc.shaders_stages.push_back({frag_module, hive::vk::ShaderModule::ShaderStage::FRAGMENT});
 
         //TODO: Remove this and read config file instead to get the layout
-        hive::PipelineLayout vertex_layout{};
-        vertex_layout.stage = hive::ShaderStage::VERTEX;
-        vertex_layout.type = hive::DescriptorType::UNIFORM_BUFFER;
+        hive::vk::PipelineLayout vertex_layout{};
+        vertex_layout.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertex_layout.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         vertex_layout.binding_location = 0;
 
-        hive::PipelineLayout frag_layout{};
-        frag_layout.stage = hive::ShaderStage::FRAGMENT;
-        frag_layout.type = hive::DescriptorType::SAMPLER2D;
-        frag_layout.binding_location = 1;
+        hive::vk::PipelineLayout frag_layout{};
+        frag_layout.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        frag_layout.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        frag_layout.binding_location = 0;
 
         pipeline_desc.layouts.push_back(vertex_layout);
         pipeline_desc.layouts.push_back(frag_layout);
 
-        if(!device_->CreatePipeline(pipeline_desc, pipeline_))
+
+        if (!device_vulkan_->CreatePipeline(pipeline_desc, default_pipeline_))
         {
             return false;
         }
 
-        device_->DestroyShader(vert_module);
-        device_->DestroyShader(frag_module);
+        hive::vk::destroy_shader_module(device_vulkan_->getDevice(), vertex_module);
+        hive::vk::destroy_shader_module(device_vulkan_->getDevice(), frag_module);
 
-        hive::PipelineDescriptorSetDesc desc_ubo{};
-        desc_ubo.type = hive::DescriptorType::UNIFORM_BUFFER;
-        desc_ubo.buffer.push_back(ubo_buffer);
-        desc_ubo.binding_location = 0;
 
-        device_->PipelineUpdateDescriptor(desc_ubo, pipeline_);
+        for(i32 i = 0; i < 3; i++) //MAX_FRAME_IN_FLIGHT
+        {
+            VkWriteDescriptorSet write_descriptor_set[2] = {};
+            VkDescriptorBufferInfo info{};
+            info.buffer = ubo_buffer.vk_buffer;
+            info.offset = 0;
+            info.range = viking_room.vertex_buffer_.size;
 
-        hive::PipelineDescriptorSetDesc desc_sampler{};
-        desc_sampler.type = hive::DescriptorType::SAMPLER2D;
-        desc_sampler.textures.push_back(texture);
-        desc_sampler.binding_location = 1;
+            write_descriptor_set[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            write_descriptor_set[0].dstSet = default_pipeline_.descriptor_sets[0];
+            write_descriptor_set[0].dstBinding = 0;
+            write_descriptor_set[0].dstArrayElement = 0;
+            write_descriptor_set[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            write_descriptor_set[0].descriptorCount = 1;
+            write_descriptor_set[0].pBufferInfo = &info;
+            write_descriptor_set[0].pImageInfo = nullptr; // Optional
+            write_descriptor_set[0].pTexelBufferView = nullptr; // Optional
 
-        device_->PipelineUpdateDescriptor(desc_sampler, pipeline_);
+            VkDescriptorImageInfo info2{};
+            info2.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            info2.imageView = viking_room.texture.vk_image_view;
+            //We have only 1 image view and sampler no matter how many frame in flight we have
+            info2.sampler = viking_room.texture.vk_sampler;
+
+
+            write_descriptor_set[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            write_descriptor_set[1].dstSet = default_pipeline_.descriptor_sets[0];
+            write_descriptor_set[1].dstBinding = 1;
+            write_descriptor_set[1].dstArrayElement = 0;
+            write_descriptor_set[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            write_descriptor_set[1].descriptorCount = 1;
+            write_descriptor_set[1].pBufferInfo = nullptr;
+            write_descriptor_set[1].pImageInfo = &info2; // Optional
+            write_descriptor_set[1].pTexelBufferView = nullptr; // Optional
+
+            vkUpdateDescriptorSets(device_vulkan_->getDevice().logical_device, 2, write_descriptor_set, 0, nullptr);
+        }
     }
 
     return true;
 }
 
 static auto startTime = std::chrono::high_resolution_clock::now();
-void update_camera(hive::GraphicsDevice &renderer, hive::Buffer &buffer)
+void update_camera(hive::vk::GraphicsDevice_Vulkan &device_vulkan, hive::vk::VulkanBuffer &buffer)
 {
     auto currentTime = std::chrono::high_resolution_clock::now();
     float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
@@ -254,36 +226,56 @@ void update_camera(hive::GraphicsDevice &renderer, hive::Buffer &buffer)
                                 1920 / (float) 1080, 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
-    renderer.BufferUpdateData(buffer, &ubo);
+    memcpy(buffer.map, &ubo, sizeof(ubo));
 }
 
 bool BasicApp::on_update(float delta_time)
 {
 
-    update_camera(*device_, ubo_buffer);
+    update_camera(*device_vulkan_, ubo_buffer);
 
-    if (!device_->BeginCmd()) return false;
+    if (!device_vulkan_->BeginCmd()) return false;
+
     {
-        device_->CmdBindPipeline(pipeline_);
-        device_->CmdDrawIndexed(vertex_buffer, index_buffer, indices.size());
-    }
-    if (!device_->EndCmd()) return false;
+        vkCmdBindPipeline(device_vulkan_->getCmdBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, default_pipeline_.vk_pipeline);
 
-    if (!device_->SubmitFrame()) return false;
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float) device_vulkan_->getSwapchain().extent_2d.width;
+        viewport.height = (float) device_vulkan_->getSwapchain().extent_2d.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(device_vulkan_->getCmdBuffer(), 0, 1, &viewport);
+
+
+        //TODO: remove scissor cmd
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = device_vulkan_->getSwapchain().extent_2d;
+        vkCmdSetScissor(device_vulkan_->getCmdBuffer(), 0, 1, &scissor);
+
+        vkCmdBindVertexBuffers(device_vulkan_->getCmdBuffer(), 0, 1, &viking_room.vertex_buffer_.vk_buffer, nullptr);
+        vkCmdBindIndexBuffer(device_vulkan_->getCmdBuffer(), viking_room.index_buffer.vk_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(device_vulkan_->getCmdBuffer(), indices.size(), 1, 0, 0, 0);
+    }
+    if (!device_vulkan_->EndCmd()) return false;
+    if (!device_vulkan_->SubmitFrame()) return false;
     return true;
 }
 
 bool BasicApp::on_destroy()
 {
-    // renderer_->destroyUbo(ubo_handle);
-    device_->WaitForGPU();
-
-    device_->DestroyTexture(texture);
-    device_->DestroyBuffer(ubo_buffer);
-    device_->DestroyBuffer(vertex_buffer);
-    device_->DestroyBuffer(index_buffer);
-    device_->DestroyPipeline(pipeline_);
-
+    // // renderer_->destroyUbo(ubo_handle);
+    // device_->WaitForGPU();
+    //
+    // device_->DestroyTexture(texture);
+    // device_->DestroyBuffer(ubo_buffer);
+    // device_->DestroyBuffer(vertex_buffer);
+    // device_->DestroyBuffer(index_buffer);
+    // device_->DestroyPipeline(pipeline_);
+    //
     return true;
 }
 

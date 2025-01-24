@@ -51,6 +51,7 @@ namespace hive::vk
     {
         VkBuffer vk_buffer;
         VkDeviceMemory vk_buffer_memory;
+        u32 size;
         void* map;
     };
 

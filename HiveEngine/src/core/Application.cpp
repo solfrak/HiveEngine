@@ -4,15 +4,15 @@
 #include <chrono>
 #include <stdexcept>
 
-hive::Application::Application(const ApplicationConfig &config) : memory_(), window_(config.window_config), device_(nullptr)
+hive::Application::Application(const ApplicationConfig &config) : memory_(), window_(config.window_config), device_vulkan_(nullptr)
 {
 
-    device_ = Memory::createObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(window_);
+    device_vulkan_ = Memory::createObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(window_);
 }
 
 hive::Application::~Application()
 {
-    Memory::destroyObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(device_);
+    Memory::destroyObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(device_vulkan_);
 }
 
 

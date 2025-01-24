@@ -1,10 +1,14 @@
 #pragma once
 #include <optional>
-#include <rendering/GraphicsDevice.h>
 
 #include "core/Memory.h"
 #include "core/Logger.h"
 #include "core/Window.h"
+
+namespace hive::vk
+{
+    class GraphicsDevice_Vulkan;
+}
 
 namespace hive
 {
@@ -31,7 +35,8 @@ namespace hive
 
         Memory memory_;
         Window window_;
-        GraphicsDevice *device_ = nullptr;
+        // GraphicsDevice *device_ = nullptr;
+        vk::GraphicsDevice_Vulkan *device_vulkan_;
 
         bool app_should_close_ = false;
     };
