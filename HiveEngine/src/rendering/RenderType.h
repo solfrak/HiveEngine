@@ -21,7 +21,4 @@ namespace hive
         glm::mat4 proj;
     };
 
-    DEFINE_HANDLE(ShaderProgram);
-    DEFINE_HANDLE(VertexBuffer);
-    DEFINE_HANDLE(UniformBufferObject);
 }
