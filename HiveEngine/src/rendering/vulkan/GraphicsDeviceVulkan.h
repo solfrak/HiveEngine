@@ -38,6 +38,7 @@ namespace hive::vk
         VulkanDevice &getDevice() { return device_; }
         VkCommandBuffer &getCmdBuffer() { return command_buffers_[current_frame_]; }
         VulkanSwapchain &getSwapchain() { return swapchain_; }
+        VkRenderPass &getRenderPass() { return render_pass_; }
 
         // [[nodiscard]] bool
         // CreateSwapchain(const ::hive::SwapchainDesc &desc, ::hive::Swapchain swapchain) const override;
@@ -45,7 +46,7 @@ namespace hive::vk
         //
         // void DestroyShader(Shader &shader) override;
         //
-        [[nodiscard]] bool CreatePipeline(const PipelineDesc &desc, VulkanPipeline &pipeline) const;
+        // [[nodiscard]] bool CreatePipeline(const PipelineDesc &desc, VulkanPipeline &pipeline) const;
         //
         // void DestroyPipeline(Pipeline &pipeline) override;
         //

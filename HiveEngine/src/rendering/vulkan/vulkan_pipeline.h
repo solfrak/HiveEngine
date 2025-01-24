@@ -21,11 +21,11 @@ namespace hive::vk
 
     void destroy_graphics_pipeline(const VulkanDevice &device, VulkanPipeline &pipeline);
 
-    void pipeline_update_texture_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
-                                        VulkanImage *images);
+    // void pipeline_update_texture_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
+                                        // VulkanImage *images);
 
-    void pipeline_update_ubo_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
-                                    VulkanBuffer *buffers);
+    // void pipeline_update_ubo_buffer(const VulkanDevice &device, VulkanPipeline &pipeline, u32 frame_in_flight,
+                                    // VulkanBuffer *buffers);
 
 
 

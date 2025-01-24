@@ -67,10 +67,11 @@ namespace hive::vk
         VulkanImage *texture_buffers;
         VulkanBuffer *ubos;
 
-        VulkanDescriptorPool *pool;
-        VulkanDescriptorSetLayout *layout;
+        VkDescriptorSetLayout descriptor_set_layout;
+        // VulkanDescriptorPool *pool;
+        // VulkanDescriptorSetLayout *layout;
 
-        std::vector<VkDescriptorSet> descriptor_sets;
+        // std::vector<VkDescriptorSet> descriptor_sets;
 
         u32 last_frame_used = 0;
 

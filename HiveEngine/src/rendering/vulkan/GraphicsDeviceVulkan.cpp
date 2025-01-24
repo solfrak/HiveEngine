@@ -109,67 +109,67 @@ hive::vk::GraphicsDevice_Vulkan::~GraphicsDevice_Vulkan()
 //              return VK_SHADER_STAGE_VERTEX_BIT;
 //     }
 // }
-bool hive::vk::GraphicsDevice_Vulkan::CreatePipeline(const PipelineDesc &desc, VulkanPipeline &pipeline) const
-{
-
-    std::vector<VkPipelineShaderStageCreateInfo> stages;
-    for (auto stage: desc.shaders_stages)
-    {
-        switch (stage.stage)
-        {
-            case ShaderModule::ShaderStage::VERTEX:
-                stages.push_back(create_stage_info(stage.module, StageType::VERTEX));
-                break;
-            case ShaderModule::ShaderStage::FRAGMENT:
-                stages.push_back(create_stage_info(stage.module, StageType::FRAGMENT));
-                break;
-        }
-    }
-
-    VkPolygonMode cull_mode = VK_POLYGON_MODE_FILL;
-
-    VulkanDescriptorPool::Builder pool_builder(device_);
-    VulkanDescriptorSetLayout::Builder layout_builder(device_);
-
-    pool_builder.setMaxtSets(MAX_FRAME_IN_FLIGHT);
-    for (const auto layout: desc.layouts)
-    {
-        switch (layout.type)
-        {
-            case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-                pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, MAX_FRAME_IN_FLIGHT);
-                layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                          layout.stage, 1);
-                break;
-            case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-                pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_FRAME_IN_FLIGHT);
-                layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          layout.stage, 1);
-                break;
-            default: ;
-        }
-    }
-
-
-    auto &pipeline_data = pipeline;
-    pipeline_data.pool = pool_builder.build();
-    pipeline_data.layout = layout_builder.build();
-
-    pipeline_data.descriptor_sets.resize(MAX_FRAME_IN_FLIGHT);
-    for (i32 i = 0; i < MAX_FRAME_IN_FLIGHT; i++)
-    {
-        if (!pipeline_data.pool->allocateDescriptor(pipeline_data.layout->getDescriptorSetLayout(),
-                                                    pipeline_data.descriptor_sets[i])) return false;
-    }
-
-    if (!create_graphics_pipeline(device_, render_pass_, stages.data(), stages.size(), MAX_FRAME_IN_FLIGHT, cull_mode,
-                                  pipeline_data))
-    {
-        return false;
-    }
-
-    return true;
-}
+// bool hive::vk::GraphicsDevice_Vulkan::CreatePipeline(const PipelineDesc &desc, VulkanPipeline &pipeline) const
+// {
+//
+//     std::vector<VkPipelineShaderStageCreateInfo> stages;
+//     for (auto stage: desc.shaders_stages)
+//     {
+//         switch (stage.stage)
+//         {
+//             case ShaderModule::ShaderStage::VERTEX:
+//                 stages.push_back(create_stage_info(stage.module, StageType::VERTEX));
+//                 break;
+//             case ShaderModule::ShaderStage::FRAGMENT:
+//                 stages.push_back(create_stage_info(stage.module, StageType::FRAGMENT));
+//                 break;
+//         }
+//     }
+//
+//     VkPolygonMode cull_mode = VK_POLYGON_MODE_FILL;
+//
+//     VulkanDescriptorPool::Builder pool_builder(device_);
+//     VulkanDescriptorSetLayout::Builder layout_builder(device_);
+//
+//     pool_builder.setMaxtSets(MAX_FRAME_IN_FLIGHT);
+//     for (const auto layout: desc.layouts)
+//     {
+//         switch (layout.type)
+//         {
+//             case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+//                 pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, MAX_FRAME_IN_FLIGHT);
+//                 layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+//                                           layout.stage, 1);
+//                 break;
+//             case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+//                 pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_FRAME_IN_FLIGHT);
+//                 layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//                                           layout.stage, 1);
+//                 break;
+//             default: ;
+//         }
+//     }
+//
+//
+//     auto &pipeline_data = pipeline;
+//     pipeline_data.pool = pool_builder.build();
+//     pipeline_data.layout = layout_builder.build();
+//
+//     pipeline_data.descriptor_sets.resize(MAX_FRAME_IN_FLIGHT);
+//     for (i32 i = 0; i < MAX_FRAME_IN_FLIGHT; i++)
+//     {
+//         if (!pipeline_data.pool->allocateDescriptor(pipeline_data.layout->getDescriptorSetLayout(),
+//                                                     pipeline_data.descriptor_sets[i])) return false;
+//     }
+//
+//     if (!create_graphics_pipeline(device_, render_pass_, stages.data(), stages.size(), MAX_FRAME_IN_FLIGHT, cull_mode,
+//                                   pipeline_data))
+//     {
+//         return false;
+//     }
+//
+//     return true;
+// }
 //
 // void hive::vk::GraphicsDevice_Vulkan::DestroyPipeline(Pipeline &pipeline)
 // {

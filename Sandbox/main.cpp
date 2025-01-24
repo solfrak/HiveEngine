@@ -15,6 +15,7 @@
 #include <stb_image.h>
 #include <rendering/vulkan/GraphicsDeviceVulkan.h>
 #include <rendering/vulkan/vulkan_buffer.h>
+#include <rendering/vulkan/vulkan_descriptor.h>
 #include <rendering/vulkan/vulkan_image.h>
 #include <rendering/vulkan/vulkan_pipeline.h>
 #include <rendering/vulkan/vulkan_shader.h>
@@ -62,6 +63,9 @@ private:
     hive::vk::VulkanBuffer ubo_buffer{};
 
     hive::vk::VulkanPipeline default_pipeline_{};
+
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
 };
 
 
@@ -132,6 +136,8 @@ bool BasicApp::on_init()
         hive::vk::transition_image_layout(device_vulkan_->getDevice(), VK_FORMAT_R8G8B8A8_SRGB,
                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, viking_room.texture);
+        hive::vk::create_image_view(device_vulkan_->getDevice(), viking_room.texture.vk_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, viking_room.texture.vk_image_view);
+        hive::vk::create_image_sampler(device_vulkan_->getDevice(), viking_room.texture.vk_sampler);
 
         hive::vk::destroy_buffer(device_vulkan_->getDevice(), temp_buffer);
     }
@@ -143,32 +149,83 @@ bool BasicApp::on_init()
         VkShaderModule frag_module;
         hive::vk::create_shader_module(device_vulkan_->getDevice(), "shaders/frag.spv", frag_module);
 
-        hive::vk::PipelineDesc pipeline_desc{};
-        pipeline_desc.shaders_stages.push_back({vertex_module, hive::vk::ShaderModule::ShaderStage::VERTEX});
-        pipeline_desc.shaders_stages.push_back({frag_module, hive::vk::ShaderModule::ShaderStage::FRAGMENT});
+        //TODO: add shader stage
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertex_module;
+        vertShaderStageInfo.pName = "main";
 
-        //TODO: Remove this and read config file instead to get the layout
-        hive::vk::PipelineLayout vertex_layout{};
-        vertex_layout.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        vertex_layout.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        vertex_layout.binding_location = 0;
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = frag_module;
+        fragShaderStageInfo.pName = "main";
 
-        hive::vk::PipelineLayout frag_layout{};
-        frag_layout.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        frag_layout.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        frag_layout.binding_location = 0;
+        VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+        VkDescriptorSetLayoutBinding uboLayoutBinding{};
+        uboLayoutBinding.binding = 0;
+        uboLayoutBinding.descriptorCount = 1;
+        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboLayoutBinding.pImmutableSamplers = nullptr;
+        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-        pipeline_desc.layouts.push_back(vertex_layout);
-        pipeline_desc.layouts.push_back(frag_layout);
+        VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+        samplerLayoutBinding.binding = 1;
+        samplerLayoutBinding.descriptorCount = 1;
+        samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        samplerLayoutBinding.pImmutableSamplers = nullptr;
+        samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
+        std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+        VkDescriptorSetLayoutCreateInfo layoutInfo{};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutInfo.pBindings = bindings.data();
 
-        if (!device_vulkan_->CreatePipeline(pipeline_desc, default_pipeline_))
+        if (vkCreateDescriptorSetLayout(device_vulkan_->getDevice().logical_device, &layoutInfo, nullptr,
+                                        &default_pipeline_.descriptor_set_layout) != VK_SUCCESS)
         {
             return false;
         }
 
+        hive::vk::create_graphics_pipeline(device_vulkan_->getDevice(), device_vulkan_->getRenderPass(), shaderStages, 2, 3, VK_POLYGON_MODE_FILL, default_pipeline_);
+
+
         hive::vk::destroy_shader_module(device_vulkan_->getDevice(), vertex_module);
         hive::vk::destroy_shader_module(device_vulkan_->getDevice(), frag_module);
+
+
+        //TODO create descriptor pool and DescriptorSet
+        std::array<VkDescriptorPoolSize, 2> poolSizes{};
+        poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[0].descriptorCount = 3;
+        poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[1].descriptorCount = 3;
+
+        VkDescriptorPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.maxSets = 3;
+
+        if (vkCreateDescriptorPool(device_vulkan_->getDevice().logical_device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+            // throw std::runtime_error("failed to create descriptor pool!");
+            return false;
+        }
+
+        std::vector<VkDescriptorSetLayout> layouts(3, default_pipeline_.descriptor_set_layout);
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = descriptorPool;
+        allocInfo.descriptorSetCount = 3;
+        allocInfo.pSetLayouts = layouts.data();
+
+        descriptorSets.resize(3);
+        if (vkAllocateDescriptorSets(device_vulkan_->getDevice().logical_device, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
+        {
+            return false;
+        }
 
 
         for(i32 i = 0; i < 3; i++) //MAX_FRAME_IN_FLIGHT
@@ -177,10 +234,10 @@ bool BasicApp::on_init()
             VkDescriptorBufferInfo info{};
             info.buffer = ubo_buffer.vk_buffer;
             info.offset = 0;
-            info.range = viking_room.vertex_buffer_.size;
+            info.range = sizeof(hive::UniformBufferObject);
 
             write_descriptor_set[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            write_descriptor_set[0].dstSet = default_pipeline_.descriptor_sets[0];
+            write_descriptor_set[0].dstSet = descriptorSets[i];
             write_descriptor_set[0].dstBinding = 0;
             write_descriptor_set[0].dstArrayElement = 0;
             write_descriptor_set[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -197,7 +254,7 @@ bool BasicApp::on_init()
 
 
             write_descriptor_set[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            write_descriptor_set[1].dstSet = default_pipeline_.descriptor_sets[0];
+            write_descriptor_set[1].dstSet = descriptorSets[i];
             write_descriptor_set[1].dstBinding = 1;
             write_descriptor_set[1].dstArrayElement = 0;
             write_descriptor_set[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -237,7 +294,6 @@ bool BasicApp::on_update(float delta_time)
     if (!device_vulkan_->BeginCmd()) return false;
 
     {
-        vkCmdBindPipeline(device_vulkan_->getCmdBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, default_pipeline_.vk_pipeline);
 
 
         VkViewport viewport{};
@@ -250,13 +306,16 @@ bool BasicApp::on_update(float delta_time)
         vkCmdSetViewport(device_vulkan_->getCmdBuffer(), 0, 1, &viewport);
 
 
-        //TODO: remove scissor cmd
         VkRect2D scissor{};
         scissor.offset = {0, 0};
         scissor.extent = device_vulkan_->getSwapchain().extent_2d;
         vkCmdSetScissor(device_vulkan_->getCmdBuffer(), 0, 1, &scissor);
 
-        vkCmdBindVertexBuffers(device_vulkan_->getCmdBuffer(), 0, 1, &viking_room.vertex_buffer_.vk_buffer, nullptr);
+        vkCmdBindPipeline(device_vulkan_->getCmdBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, default_pipeline_.vk_pipeline);
+        vkCmdBindDescriptorSets(device_vulkan_->getCmdBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, default_pipeline_.pipeline_layout, 0, 1, &descriptorSets[0], 0, nullptr);
+
+        VkDeviceSize offset = 0;
+        vkCmdBindVertexBuffers(device_vulkan_->getCmdBuffer(), 0, 1, &viking_room.vertex_buffer_.vk_buffer, &offset);
         vkCmdBindIndexBuffer(device_vulkan_->getCmdBuffer(), viking_room.index_buffer.vk_buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(device_vulkan_->getCmdBuffer(), indices.size(), 1, 0, 0, 0);
     }
@@ -267,15 +326,15 @@ bool BasicApp::on_update(float delta_time)
 
 bool BasicApp::on_destroy()
 {
-    // // renderer_->destroyUbo(ubo_handle);
-    // device_->WaitForGPU();
-    //
-    // device_->DestroyTexture(texture);
-    // device_->DestroyBuffer(ubo_buffer);
-    // device_->DestroyBuffer(vertex_buffer);
-    // device_->DestroyBuffer(index_buffer);
-    // device_->DestroyPipeline(pipeline_);
-    //
+    device_vulkan_->WaitForGPU();
+
+    hive::vk::destroy_buffer(device_vulkan_->getDevice(), ubo_buffer);
+    hive::vk::destroy_buffer(device_vulkan_->getDevice(), viking_room.index_buffer);
+    hive::vk::destroy_buffer(device_vulkan_->getDevice(), viking_room.vertex_buffer_);
+    hive::vk::destroy_image(device_vulkan_->getDevice(), viking_room.texture);
+    hive::vk::destroy_graphics_pipeline(device_vulkan_->getDevice(), default_pipeline_);
+    hive::vk::destroy_descriptor_set_layout(device_vulkan_->getDevice(), default_pipeline_.descriptor_set_layout);
+    hive::vk::destroy_descriptor_pool(device_vulkan_->getDevice(), descriptorPool);
     return true;
 }
 
