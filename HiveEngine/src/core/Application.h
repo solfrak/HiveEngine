@@ -15,7 +15,7 @@ namespace hive
 
     struct ApplicationConfig
     {
-        Logger::LogLevel log_level;
+        // Logger::LogLevel log_level;
         WindowConfig window_config;
     };
 
