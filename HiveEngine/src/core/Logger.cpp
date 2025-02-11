@@ -1,6 +1,6 @@
 #include "Logger.h"
 #include <iostream>
-
+#include <cstdarg>
 
 
 hive::Logger& hive::Logger::getInstance()
@@ -11,9 +11,16 @@ hive::Logger& hive::Logger::getInstance()
 
 void hive::Logger::Log(LogLevel level, const std::string &message, ...)
 {
+    char buffer[1024];
+
+    va_list args;
+    va_start(args, message);
+    vsnprintf(buffer, 1024, message.c_str(), args);
+    va_end(args);
+
     for (auto &callback : callbacks_)
     {
-        callback(level, message);
+        callback(level, std::string(buffer));
     }
 }
 
