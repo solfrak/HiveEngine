@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include "window_glfw.h"
 
+#include <core/Event/Service/IEventService.h>
+#include <core/Event/KeyEvent.h>
 
 
 hive::WindowGLFW::~WindowGLFW()
@@ -27,6 +29,16 @@ hive::WindowGLFW::WindowGLFW(const WindowConfig &config)
     {
         //TODO: error handling
     }
+
+
+    glfwSetWindowUserPointer(window_, IEventService::get_singleton());
+
+    glfwSetKeyCallback(window_, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+    {
+        IEventService *service = static_cast<IEventService *>(glfwGetWindowUserPointer(window));
+        std::shared_ptr<KeyEvent> event = std::make_shared<KeyEvent>(key);
+        service->PushEvent(event);
+    });
 
 }
 

@@ -3,8 +3,17 @@
 //
 
 #include "Input.h"
+
+#include <core/Event/Service/IEventService.h>
+#include <core/Event/KeyEvent.h>
+
 #include "core/Logger.h"
 #include "core/Event/MouseEvent.h"
+
+hive::Input::Input()
+{
+    IEventService::get_singleton()->Subscribe(std::bind(&Input::event_callback, this, std::placeholders::_1));
+}
 
 void hive::Input::event_callback(std::shared_ptr<Event> &event)
 {
@@ -19,4 +28,9 @@ void hive::Input::handle(const MouseMotionEvent &event)
 void hive::Input::handle(const MouseButtonEvent &event)
 {
     LOG_INFO("Mouse button event: %d, %b", event.GetButton(), event.GetState());
+}
+
+void hive::Input::handle(const KeyEvent &event)
+{
+    LOG_INFO("Key button was pressed or released: %d", event.GetKey());
 }

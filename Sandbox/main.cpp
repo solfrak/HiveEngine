@@ -15,8 +15,6 @@
 #include <stb_image.h>
 #include <core/Event/MouseEvent.h>
 #include <core/Input/Input.h>
-#include <core/Message/BufferedMessageService.h>
-#include <core/Message/IMessageService.h>
 #include <rendering/vulkan/GraphicsDeviceVulkan.h>
 #include <rendering/vulkan/vulkan_buffer.h>
 #include <rendering/vulkan/vulkan_descriptor.h>
@@ -375,27 +373,18 @@ void BasicApp::load_model()
 int main()
 {
 
-    // hive::ApplicationConfig config{};
-    //
-    // config.window_config.width = 1080;
-    // config.window_config.height = 920;
-    // config.window_config.title = "Hive Engine";
-    // config.window_config.type = hive::WindowConfig::WindowType::GLFW;
-    //
-    // // hive::Application app(config);
-    // BasicApp app(config);
-    // app.run();
+    hive::ApplicationConfig config{};
 
-    hive::Input input;
-    hive::IEventService *service = new hive::BufferEventService();
-    service->Subscribe(std::bind(&hive::Input::event_callback, &input, std::placeholders::_1));
+    config.window_config.width = 1080;
+    config.window_config.height = 920;
+    config.window_config.title = "Hive Engine";
+    config.window_config.type = hive::WindowConfig::WindowType::GLFW;
 
-    std::shared_ptr<hive::MouseButtonEvent> mouse_button_event = std::make_shared<hive::MouseButtonEvent>(100, true);
-    std::shared_ptr<hive::MouseMotionEvent> mouse_motion_event = std::make_shared<hive::MouseMotionEvent>(-10, 10);
+    // hive::Application app(config);
+    BasicApp app(config);
+    app.run();
 
-    service->PushEvent(mouse_button_event);
-    service->PushEvent(mouse_motion_event);
-    service->FlushEvents();
+
 
 
 }

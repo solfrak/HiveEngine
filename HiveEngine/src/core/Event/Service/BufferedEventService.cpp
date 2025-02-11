@@ -1,4 +1,16 @@
-#include "BufferedMessageService.h"
+#include "BufferedEventService.h"
+#include <cassert>
+
+hive::BufferEventService::BufferEventService()
+{
+    assert(s_instance == nullptr);
+    s_instance = this;
+}
+
+hive::BufferEventService::~BufferEventService()
+{
+    s_instance = nullptr;
+}
 
 void hive::BufferEventService::Subscribe(MessageCallack callback)
 {
