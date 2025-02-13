@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 using u8 = unsigned char;
 using u16 = unsigned short;
@@ -13,3 +14,6 @@ using i64 = signed long long;
 
 using f32 = float;
 using f64 = double;
+
+template<typename T>
+using Ref = std::shared_ptr<T>;

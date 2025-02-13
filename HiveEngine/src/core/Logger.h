@@ -1,43 +1,39 @@
 #pragma once
 
 #include <hvpch.h>
+#include <vector>
+#include <functional>
+#include <string>
 namespace hive
 {
-    //The Logger's job is to hold all the sync we could think of (File Sync, Console Sync, etc) and call
-    //them according to the level they registered
+    enum class LogLevel
+    {
+        Debug, Info, Warn, Error
+    };
+
+    using LoggerCallback = std::function<void(LogLevel, std::string)>;
+
     class Logger
     {
     public:
-        enum class LogLevel
-        {
-            DEBUG, INFO, WARN, ERROR
-        };
+        static Logger& getInstance(); //Lazy loading singleton
 
-        Logger();
-        ~Logger();
+        void Log(LogLevel level, const std::string& message, ...);
+        void AddCallback(LoggerCallback callback);
 
-        static void LogOutput(LogLevel level, const char* msg, ...);
-
-        using SyncFunction = void(*)(LogLevel level, const char *msg);
-
-        static void AddSync(LogLevel level, SyncFunction function);
-
+        Logger(const Logger&) = delete;
+        Logger& operator=(const Logger&) = delete;
+        Logger(Logger&&) = delete;
     private:
-        struct SyncFunctionData
-        {
-            SyncFunction function;
-            LogLevel level;
-        } ;
+        Logger();
+        void AddDefaultCallback();
 
-        SyncFunctionData sync_functions_[8]{};
-        u8 sync_function_count_ = 0;
+    protected:
+        std::vector<LoggerCallback> callbacks_;
     };
 
-
-
 }
-
-#define LOG_DEBUG(msg, ...) hive::Logger::LogOutput(hive::Logger::LogLevel::DEBUG, msg, ##__VA_ARGS__);
-#define LOG_INFO(msg, ...) hive::Logger::LogOutput(hive::Logger::LogLevel::INFO, msg, ##__VA_ARGS__);
-#define LOG_WARN(msg, ...) hive::Logger::LogOutput(hive::Logger::LogLevel::WARN, msg, ##__VA_ARGS__);
-#define LOG_ERROR(msg, ...) hive::Logger::LogOutput(hive::Logger::LogLevel::ERROR, msg, ##__VA_ARGS__);
+#define LOG_DEBUG(msg, ...) hive::Logger::getInstance().Log(hive::LogLevel::Debug, msg, ##__VA_ARGS__);
+#define LOG_INFO(msg, ...) hive::Logger::getInstance().Log(hive::LogLevel::Info, msg, ##__VA_ARGS__);
+#define LOG_WARN(msg, ...) hive::Logger::getInstance().Log(hive::LogLevel::Warn, msg, ##__VA_ARGS__);
+#define LOG_ERROR(msg, ...) hive::Logger::getInstance().Log(hive::LogLevel::Error, msg, ##__VA_ARGS__);

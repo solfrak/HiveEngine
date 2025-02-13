@@ -1,57 +1,44 @@
 #include "Logger.h"
-#include <cassert>
+#include <iostream>
 #include <cstdarg>
-#include <cstdio>
 
-static hive::Logger *s_logger = nullptr;
-hive::Logger::Logger()
+
+hive::Logger& hive::Logger::getInstance()
 {
-    assert(s_logger == nullptr);
-
-    s_logger = this;
+    static Logger instance;
+    return instance;
 }
 
-hive::Logger::~Logger()
+void hive::Logger::Log(LogLevel level, const std::string &message, ...)
 {
-    s_logger = nullptr;
-}
-
-void hive::Logger::LogOutput(LogLevel level, const char *msg, ...)
-{
-    assert(s_logger != nullptr);
-
-    const char* levelStr = "";
-    switch (level) {
-        case LogLevel::DEBUG: levelStr = "DEBUG"; break;
-        case LogLevel::INFO:  levelStr = "INFO";  break;
-        case LogLevel::WARN:  levelStr = "WARN";  break;
-        case LogLevel::ERROR: levelStr = "ERROR"; break;
-        default: levelStr = "UNKNOWN"; break;
-    }
+    char buffer[1024];
 
     va_list args;
-    va_start(args, msg);
-
-    char buffer[1024 * 32];
-    vsnprintf(buffer, sizeof(buffer), msg, args);
+    va_start(args, message);
+    vsnprintf(buffer, 1024, message.c_str(), args);
     va_end(args);
 
-    char finalBuffer[1024 * 32];
-    snprintf(finalBuffer, sizeof(finalBuffer), "[%s] %s", levelStr, buffer);
-
-    for(int i = 0; i < s_logger->sync_function_count_; i++)
+    for (auto &callback : callbacks_)
     {
-        if(level >= s_logger->sync_functions_[i].level)
-        {
-            s_logger->sync_functions_[i].function(level, finalBuffer);
-
-        }
+        callback(level, std::string(buffer));
     }
 }
 
-void hive::Logger::AddSync(LogLevel level, SyncFunction function)
+void hive::Logger::AddCallback(LoggerCallback callback)
 {
-    assert(s_logger != nullptr);
-    s_logger->sync_functions_[s_logger->sync_function_count_++] = {function, level};
+    callbacks_.push_back(callback);
 }
 
+hive::Logger::Logger()
+{
+    AddDefaultCallback();
+}
+
+void hive::Logger::AddDefaultCallback()
+{
+    //TODO: add a better default callback with color and prefix
+    AddCallback([](LogLevel level, const std::string &message)
+    {
+        std::cout << message << std::endl;
+    });
+}

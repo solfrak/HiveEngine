@@ -4,6 +4,13 @@
 #include "core/Memory.h"
 #include "core/Logger.h"
 #include "core/Window.h"
+#include "Event/Service/IEventService.h"
+#include "Input/Input.h"
+
+namespace hive::vk
+{
+    class GraphicsDevice_Vulkan;
+}
 
 namespace hive::vk
 {
@@ -15,7 +22,7 @@ namespace hive
 
     struct ApplicationConfig
     {
-        Logger::LogLevel log_level;
+        // Logger::LogLevel log_level;
         WindowConfig window_config;
     };
 
@@ -34,7 +41,9 @@ namespace hive
         virtual bool on_destroy() = 0;
 
         Memory memory_;
+        IEventService *event_service_;
         Window window_;
+        Input input_;
         // GraphicsDevice *device_ = nullptr;
         vk::GraphicsDevice_Vulkan *device_vulkan_;
 

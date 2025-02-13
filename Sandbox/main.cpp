@@ -21,13 +21,6 @@
 #include <rendering/vulkan/vulkan_shader.h>
 #include <rendering/vulkan/vulkan_types.h>
 
-void RegisterDefaultLoggerSync(hive::Logger::LogLevel level)
-{
-    hive::Logger::AddSync(level, [](hive::Logger::LogLevel level, const char* msg)
-    {
-       std::cout << msg << std::endl;
-    });
-}
 
 class BasicApp final : public hive::Application
 {
@@ -294,8 +287,6 @@ bool BasicApp::on_update(float delta_time)
     if (!device_vulkan_->BeginCmd()) return false;
 
     {
-
-
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -321,6 +312,7 @@ bool BasicApp::on_update(float delta_time)
     }
     if (!device_vulkan_->EndCmd()) return false;
     if (!device_vulkan_->SubmitFrame()) return false;
+
     return true;
 }
 
@@ -376,12 +368,9 @@ void BasicApp::load_model()
 
 int main()
 {
-    hive::Logger logger;
-    RegisterDefaultLoggerSync(hive::Logger::LogLevel::DEBUG);
 
     hive::ApplicationConfig config{};
 
-    config.log_level = hive::Logger::LogLevel::DEBUG;
     config.window_config.width = 1080;
     config.window_config.height = 920;
     config.window_config.title = "Hive Engine";
@@ -392,4 +381,7 @@ int main()
     app.run();
 
 
+
+
 }
+
