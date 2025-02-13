@@ -9,11 +9,11 @@ namespace hive
         BufferEventService();
         ~BufferEventService();
         void Subscribe(MessageCallack callback) override;
-        void PushEvent(const std::shared_ptr<Event> &event) override;
+        void PushEvent(const Event &event) override;
         void FlushEvents() override;
 
     private:
-        std::vector<std::shared_ptr<Event>> m_events;
+        std::vector<Event> m_events;
         std::vector<MessageCallack> m_eventCallbacks;
     };
 }

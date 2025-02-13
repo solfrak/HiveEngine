@@ -1,4 +1,5 @@
 #include "BufferedEventService.h"
+#include <core/Event/Event.h>
 #include <cassert>
 
 hive::BufferEventService::BufferEventService()
@@ -17,7 +18,7 @@ void hive::BufferEventService::Subscribe(MessageCallack callback)
     m_eventCallbacks.push_back(callback);
 }
 
-void hive::BufferEventService::PushEvent(const std::shared_ptr<Event> &event)
+void hive::BufferEventService::PushEvent(const Event &event)
 {
     m_events.push_back(event);
 }

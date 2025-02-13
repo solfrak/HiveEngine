@@ -13,8 +13,6 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <core/Event/MouseEvent.h>
-#include <core/Input/Input.h>
 #include <rendering/vulkan/GraphicsDeviceVulkan.h>
 #include <rendering/vulkan/vulkan_buffer.h>
 #include <rendering/vulkan/vulkan_descriptor.h>
@@ -290,8 +288,6 @@ bool BasicApp::on_update(float delta_time)
     if (!device_vulkan_->BeginCmd()) return false;
 
     {
-
-
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -317,6 +313,8 @@ bool BasicApp::on_update(float delta_time)
     }
     if (!device_vulkan_->EndCmd()) return false;
     if (!device_vulkan_->SubmitFrame()) return false;
+
+
     return true;
 }
 

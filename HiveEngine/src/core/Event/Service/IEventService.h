@@ -2,14 +2,11 @@
 #include <functional>
 #include <memory>
 
-namespace hive
-{
-    class Event;
-}
 
 namespace hive
 {
-    using MessageCallack = std::function<void(std::shared_ptr<Event> &event)>;
+    struct Event;
+    using MessageCallack = std::function<void(Event &event)>;
 
     class IEventService
     {
@@ -21,7 +18,7 @@ namespace hive
 
         virtual void Subscribe(MessageCallack callback) = 0;
 
-        virtual void PushEvent(const std::shared_ptr<Event> &event) = 0;
+        virtual void PushEvent(const Event &event) = 0;
         virtual void FlushEvents() = 0;
 
     protected:
