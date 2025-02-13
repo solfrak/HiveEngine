@@ -22,7 +22,6 @@
 #include <rendering/vulkan/vulkan_types.h>
 
 
-
 class BasicApp final : public hive::Application
 {
 public:
@@ -313,7 +312,6 @@ bool BasicApp::on_update(float delta_time)
     }
     if (!device_vulkan_->EndCmd()) return false;
     if (!device_vulkan_->SubmitFrame()) return false;
-
 
     return true;
 }

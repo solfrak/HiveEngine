@@ -12,6 +12,11 @@ namespace hive::vk
     class GraphicsDevice_Vulkan;
 }
 
+namespace hive::vk
+{
+    class GraphicsDevice_Vulkan;
+}
+
 namespace hive
 {
 
