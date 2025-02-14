@@ -18,7 +18,7 @@ namespace hive
     public:
         static Logger& getInstance(); //Lazy loading singleton
 
-        void Log(LogLevel level, const std::string& message, ...);
+        void Log(LogLevel level, const char* message, ...);
         void AddCallback(LoggerCallback callback);
 
         Logger(const Logger&) = delete;

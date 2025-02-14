@@ -9,13 +9,13 @@ hive::Logger& hive::Logger::getInstance()
     return instance;
 }
 
-void hive::Logger::Log(LogLevel level, const std::string &message, ...)
+void hive::Logger::Log(LogLevel level, const char *message, ...)
 {
     char buffer[1024];
 
     va_list args;
     va_start(args, message);
-    vsnprintf(buffer, 1024, message.c_str(), args);
+    vsnprintf(buffer, 1024, message, args);
     va_end(args);
 
     for (auto &callback : callbacks_)
