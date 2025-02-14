@@ -7,6 +7,12 @@ namespace hive
     {
         MouseMove, MouseButtonDown, MouseButtonUp, MouseScroll, MouseScrollWheel,
         KeyPressed, KeyReleased, KeyTyped,
+        FramebufferResized
+    };
+
+    enum class EventCategory
+    {
+        Input, Rendering,
     };
 
     //Using this type of struct is powerfull since we don't have to use polymorphism in order to handle events. But it can be more error prone since you have to know exactly the data layout for each type of event

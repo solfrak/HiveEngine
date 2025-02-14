@@ -3,7 +3,9 @@ set(PCH_HEADER src/hvpch.h)
 
 #Hive
 file(GLOB_RECURSE SOURCES src/*.cpp)
-add_library(hive STATIC ${SOURCES})
+add_library(hive STATIC ${SOURCES}
+        src/ecs/Component_Registry.h
+        src/ecs/Component/Position.h)
 target_include_directories(hive PUBLIC src)
 target_precompile_headers(hive PUBLIC src/hvpch.h)
 
@@ -22,6 +24,9 @@ target_include_directories(hive PUBLIC dep/stb_image)
 
 #tinyobjloader
 target_include_directories(hive PUBLIC dep/tinyobjloader)
+
+#entt
+target_include_directories(hive PRIVATE dep/entt/src)
 
 #Vulkan
 if(WIN32)

@@ -21,6 +21,9 @@
 #include <rendering/vulkan/vulkan_shader.h>
 #include <rendering/vulkan/vulkan_types.h>
 
+#include "ecs/EcsWorld.h"
+#include "ecs/Component/Position.h"
+
 
 class BasicApp final : public hive::Application
 {
@@ -260,6 +263,13 @@ bool BasicApp::on_init()
         }
     }
 
+    auto e1 = world_.create();
+
+    world_.add_component<hive::Position>(e1, {0, 13});
+
+    auto &pos = world_.get_component<hive::Position>(e1);
+
+
     return true;
 }
 
@@ -273,7 +283,7 @@ void update_camera(hive::vk::GraphicsDevice_Vulkan &device_vulkan, hive::vk::Vul
     // ubo.model = glm::mat4(1.0f);
     ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f),
-                                1920 / (float) 1080, 0.1f, 10.0f);
+                                device_vulkan.get_framebuffer_x() / (float) device_vulkan.get_framebuffer_y(), 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
     memcpy(buffer.map, &ubo, sizeof(ubo));
@@ -312,6 +322,7 @@ bool BasicApp::on_update(float delta_time)
     }
     if (!device_vulkan_->EndCmd()) return false;
     if (!device_vulkan_->SubmitFrame()) return false;
+
 
     return true;
 }

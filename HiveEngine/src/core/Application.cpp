@@ -2,12 +2,11 @@
 #include <rendering/vulkan/GraphicsDeviceVulkan.h>
 
 
-
+#include "Event/Event.h"
 #include "Event/Service/BufferedEventService.h"
 
 hive::Application::Application(const ApplicationConfig &config) : memory_(), event_service_{Memory::createObject<BufferEventService, Memory::ENGINE>()}, window_(config.window_config), device_vulkan_(nullptr)
 {
-
     device_vulkan_ = Memory::createObject<vk::GraphicsDevice_Vulkan, Memory::RENDERER>(window_);
 }
 

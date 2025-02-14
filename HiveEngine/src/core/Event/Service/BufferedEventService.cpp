@@ -13,21 +13,21 @@ hive::BufferEventService::~BufferEventService()
     s_instance = nullptr;
 }
 
-void hive::BufferEventService::Subscribe(MessageCallack callback)
+void hive::BufferEventService::Subscribe(EventCategory category, MessageCallack callback)
 {
-    m_eventCallbacks.push_back(callback);
+    m_eventCallbacks[category].push_back(callback);
 }
 
-void hive::BufferEventService::PushEvent(const Event &event)
+void hive::BufferEventService::PushEvent(EventCategory category, const Event &event)
 {
-    m_events.push_back(event);
+    m_events.emplace_back(std::make_pair(category, event));
 }
 
 void hive::BufferEventService::FlushEvents()
 {
-    for (auto &event : m_events)
+    for (auto [category, event] : m_events)
     {
-        for (auto &callback : m_eventCallbacks)
+        for (auto &callback : m_eventCallbacks[category])
         {
             callback(event);
         }

@@ -1,5 +1,6 @@
 #pragma once
 #include <optional>
+#include <ecs/EcsWorld.h>
 
 #include "core/Memory.h"
 #include "core/Logger.h"
@@ -44,6 +45,7 @@ namespace hive
         IEventService *event_service_;
         Window window_;
         Input input_;
+        World world_;
         // GraphicsDevice *device_ = nullptr;
         vk::GraphicsDevice_Vulkan *device_vulkan_;
 

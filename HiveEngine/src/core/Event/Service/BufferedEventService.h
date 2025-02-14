@@ -1,5 +1,6 @@
 #pragma once
 #include "core/Event/Service/IEventService.h"
+#include <unordered_map>
 
 namespace hive
 {
@@ -7,14 +8,15 @@ namespace hive
     {
     public:
         BufferEventService();
-        ~BufferEventService();
-        void Subscribe(MessageCallack callback) override;
-        void PushEvent(const Event &event) override;
+        ~BufferEventService() override;
+
+        void Subscribe(EventCategory category, MessageCallack callback) override;
+        void PushEvent(EventCategory category, const Event &event) override;
         void FlushEvents() override;
 
     private:
-        std::vector<Event> m_events;
-        std::vector<MessageCallack> m_eventCallbacks;
+        std::vector<std::pair<EventCategory, Event>> m_events;
+        std::unordered_map<EventCategory, std::vector<MessageCallack>> m_eventCallbacks;
     };
 }
 

@@ -174,10 +174,10 @@ namespace hive
 
         static constexpr i16 MAX_KEYS = 256;
         static constexpr i16 MAX_MOUSE_BUTTON = 8;
-        Button m_keys[MAX_KEYS];
-        Button m_mouse_button[MAX_MOUSE_BUTTON];
-        f64 m_mouse_x, m_mouse_y;
-        f64 m_mouse_scroll_x, m_mouse_scroll_y;
+        Button m_keys[MAX_KEYS]{};
+        Button m_mouse_button[MAX_MOUSE_BUTTON]{};
+        f64 m_mouse_x{}, m_mouse_y{};
+        f64 m_mouse_scroll_x{}, m_mouse_scroll_y{};
 
 
     private:

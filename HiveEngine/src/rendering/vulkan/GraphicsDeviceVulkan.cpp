@@ -1,3 +1,5 @@
+#include <core/Event/Event.h>
+#include <core/Event/Service/IEventService.h>
 #include <rendering/RendererPlatform.h>
 
 
@@ -23,7 +25,7 @@
 
 #include <array>
 
-hive::vk::GraphicsDevice_Vulkan::GraphicsDevice_Vulkan(const Window &window)
+hive::vk::GraphicsDevice_Vulkan::GraphicsDevice_Vulkan(const Window &window) : window_(window)
 {
     if (!create_instance(instance_, window)) return;
     if (config::enable_validation && !setup_debug_messenger(instance_, debugMessenger)) return;
@@ -47,6 +49,12 @@ hive::vk::GraphicsDevice_Vulkan::GraphicsDevice_Vulkan(const Window &window)
         available_pipeline.push(i);
         available_image.push(i);
     }
+
+    IEventService::get_singleton()->Subscribe(EventCategory::Rendering, [this](const Event& event)
+    {
+        handle_rendering_event(event);
+    });
+
 
     LOG_INFO("Device init succesfull");
     is_graphics_device_ready_ = true;
@@ -76,277 +84,51 @@ hive::vk::GraphicsDevice_Vulkan::~GraphicsDevice_Vulkan()
 }
 
 
+void hive::vk::GraphicsDevice_Vulkan::recreate_swap_chain()
+{
+    vkDeviceWaitIdle(device_.logical_device);
 
-// bool hive::vk::GraphicsDevice_Vulkan::CreateShader(const ShaderDesc &desc, Shader &shader)
-// {
-//     VkShaderModule module;
-//     if(!create_shader_module(device_, desc.path.c_str(), module))
-//     {
-//         return false;
-//     }
-//
-//     shader.desc = desc;
-//     shader.local_data = module;
-//     return true;
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::DestroyShader(Shader &shader)
-// {
-//     auto module = static_cast<VkShaderModule>(shader.local_data);
-//     destroy_shader_module(device_, module);
-// }
-//
-// constexpr VkShaderStageFlagBits get_vulkan_stage(hive::ShaderStage stage)
-// {
-//     switch (stage)
-//     {
-//         case hive::ShaderStage::VERTEX:
-//             return VK_SHADER_STAGE_VERTEX_BIT;
-//         case hive::ShaderStage::FRAGMENT:
-//             return VK_SHADER_STAGE_FRAGMENT_BIT;
-//          default:
-//             LOG_WARN("Vulkan: stage not supported");
-//              return VK_SHADER_STAGE_VERTEX_BIT;
-//     }
-// }
-// bool hive::vk::GraphicsDevice_Vulkan::CreatePipeline(const PipelineDesc &desc, VulkanPipeline &pipeline) const
-// {
-//
-//     std::vector<VkPipelineShaderStageCreateInfo> stages;
-//     for (auto stage: desc.shaders_stages)
-//     {
-//         switch (stage.stage)
-//         {
-//             case ShaderModule::ShaderStage::VERTEX:
-//                 stages.push_back(create_stage_info(stage.module, StageType::VERTEX));
-//                 break;
-//             case ShaderModule::ShaderStage::FRAGMENT:
-//                 stages.push_back(create_stage_info(stage.module, StageType::FRAGMENT));
-//                 break;
-//         }
-//     }
-//
-//     VkPolygonMode cull_mode = VK_POLYGON_MODE_FILL;
-//
-//     VulkanDescriptorPool::Builder pool_builder(device_);
-//     VulkanDescriptorSetLayout::Builder layout_builder(device_);
-//
-//     pool_builder.setMaxtSets(MAX_FRAME_IN_FLIGHT);
-//     for (const auto layout: desc.layouts)
-//     {
-//         switch (layout.type)
-//         {
-//             case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-//                 pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, MAX_FRAME_IN_FLIGHT);
-//                 layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-//                                           layout.stage, 1);
-//                 break;
-//             case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-//                 pool_builder.addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_FRAME_IN_FLIGHT);
-//                 layout_builder.addBinding(layout.binding_location, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-//                                           layout.stage, 1);
-//                 break;
-//             default: ;
-//         }
-//     }
-//
-//
-//     auto &pipeline_data = pipeline;
-//     pipeline_data.pool = pool_builder.build();
-//     pipeline_data.layout = layout_builder.build();
-//
-//     pipeline_data.descriptor_sets.resize(MAX_FRAME_IN_FLIGHT);
-//     for (i32 i = 0; i < MAX_FRAME_IN_FLIGHT; i++)
-//     {
-//         if (!pipeline_data.pool->allocateDescriptor(pipeline_data.layout->getDescriptorSetLayout(),
-//                                                     pipeline_data.descriptor_sets[i])) return false;
-//     }
-//
-//     if (!create_graphics_pipeline(device_, render_pass_, stages.data(), stages.size(), MAX_FRAME_IN_FLIGHT, cull_mode,
-//                                   pipeline_data))
-//     {
-//         return false;
-//     }
-//
-//     return true;
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::DestroyPipeline(Pipeline &pipeline)
-// {
-//     destroy_graphics_pipeline(device_, pipelines[pipeline.id]);
-//     available_pipeline.push(pipeline.id);
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::PipelineUpdateDescriptor(const PipelineDescriptorSetDesc &desc,
-//                                                                Pipeline &pipeline)
-// {
-//     for(i32 i = 0; i < MAX_FRAME_IN_FLIGHT; i++)
-//     {
-//         switch (desc.type)
-//         {
-//             case DescriptorType::UNIFORM_BUFFER:
-//             {
-//                 VkDescriptorBufferInfo info{};
-//                 info.buffer = buffers[desc.buffer[0].id].vk_buffer; //We have only one ubo no matter how many frame in flight we have
-//                 info.offset = 0;
-//                 info.range = desc.buffer[0].desc.size;
-//
-//                 VkWriteDescriptorSet descriptorWrite{};
-//                 descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//                 descriptorWrite.dstSet = pipelines[pipeline.id].descriptor_sets[i];
-//                 descriptorWrite.dstBinding = desc.binding_location;
-//                 descriptorWrite.dstArrayElement = 0;
-//                 descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-//                 descriptorWrite.descriptorCount = 1;
-//                 descriptorWrite.pBufferInfo = &info;
-//                 descriptorWrite.pImageInfo = nullptr; // Optional
-//                 descriptorWrite.pTexelBufferView = nullptr; // Optional
-//
-//                 vkUpdateDescriptorSets(device_.logical_device, 1, &descriptorWrite, 0, nullptr);
-//                 break;
-//             }
-//             case DescriptorType::SAMPLER2D:
-//             {
-//                 VkDescriptorImageInfo info{};
-//                 info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-//                 info.imageView = images[desc.textures[0].id].vk_image_view; //We have only 1 image view and sampler no matter how many frame in flight we have
-//                 info.sampler = images[desc.textures[0].id].vk_sampler;
-//
-//
-//
-//                 VkWriteDescriptorSet descriptorWrite{};
-//                 descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//                 descriptorWrite.dstSet = pipelines[pipeline.id].descriptor_sets[i];
-//                 descriptorWrite.dstBinding = desc.binding_location;
-//                 descriptorWrite.dstArrayElement = 0;
-//                 descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-//                 descriptorWrite.descriptorCount = 1;
-//                 descriptorWrite.pBufferInfo = nullptr;
-//                 descriptorWrite.pImageInfo = &info; // Optional
-//                 descriptorWrite.pTexelBufferView = nullptr; // Optional
-//
-//                 vkUpdateDescriptorSets(device_.logical_device, 1, &descriptorWrite, 0, nullptr);
-//                 break;
-//             }
-//         }
-//     }
-// }
-//
-//
-// bool hive::vk::GraphicsDevice_Vulkan::CreateBuffer(const BufferDesc &desc, Buffer &buffer)
-// {
-//     VkBufferUsageFlags usage_flags{};
-//     VkMemoryPropertyFlags memory_property_flags = 0;
-//
-//     //Usage flag
-//     if(desc.usage_flag & BufferDesc::UsageFlag::INDEX_BUFFER)
-//         usage_flags |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-//     if(desc.usage_flag & BufferDesc::UsageFlag::VERTEX_BUFFER)
-//         usage_flags |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-//     if(desc.usage_flag & BufferDesc::UsageFlag::TRANSFER_DST)
-//         usage_flags |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-//     if(desc.usage_flag & BufferDesc::UsageFlag::TRANSFER_SRC)
-//         usage_flags |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-//     if(desc.usage_flag & BufferDesc::UsageFlag::UNIFORM_BUFFER)
-//         usage_flags |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-//
-//     //Memory property
-//     if(desc.mem_prop_flags & BufferDesc::MemoryType::DEVICE_LOCAL)
-//         memory_property_flags |= VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-//     if(desc.mem_prop_flags & BufferDesc::MemoryType::HOST_COHERENT)
-//         memory_property_flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-//     if(desc.mem_prop_flags & BufferDesc::MemoryType::HOST_VISIBLE)
-//         memory_property_flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-//
-//
-//     if(available_buffers.empty())
-//     {
-//         LOG_ERROR("Vulkan device: no buffer is available at the moment");
-//         return false;
-//     }
-//
-//
-//     const u32 id = available_buffers.front();
-//     available_buffers.pop();
-//     if(!create_buffer(device_, usage_flags, memory_property_flags, desc.size, buffers[id]))
-//     {
-//         LOG_ERROR("Vulkan device: failed to create the buffer");
-//         return false;
-//     }
-//
-//     buffer.desc = desc;
-//     buffer.id = id;
-//
-//     return true;
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::FillBuffer(Buffer &buffer, void *data, const u32 size)
-// {
-//     buffer_fill_data(device_, buffers[buffer.id], data, size);
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::CopyBuffer(Buffer &src, Buffer &dest)
-// {
-//     buffer_copy(device_, buffers[src.id], buffers[dest.id], src.desc.size);
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::DestroyBuffer(Buffer &buffer)
-// {
-//     destroy_buffer(device_, buffers[buffer.id]);
-//     available_buffers.push(buffer.id);
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::BufferUpdateData(Buffer &buffer, void *data)
-// {
-//     auto &[vk_buffer, vk_buffer_memory, map] = buffers[buffer.id];
-//     memcpy(map, data, buffer.desc.size);
-// }
-//
-// bool hive::vk::GraphicsDevice_Vulkan::CreateTexture(const TextureDesc &desc, const Buffer &buffer, Texture &texture)
-// {
-//     if(available_image.empty()) return false;
-//
-//     const u32 id = available_image.front();
-//     available_image.pop();
-//
-//     VkFormat format = {};
-//
-//     switch (desc.format)
-//     {
-//         case TextureDesc::Format::R8G8B8A8_SRGB:
-//             format = VK_FORMAT_R8G8B8A8_SRGB;
-//             break;
-//     }
-//     create_image(device_, desc.width, desc.heigth, format, VK_IMAGE_TILING_OPTIMAL,
-//                  VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-//                  images[id]);
-//
-//     transition_image_layout(device_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED,
-//                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, images[id]);
-//     copy_buffer_to_image(device_, buffers[buffer.id], images[id], desc.width, desc.heigth);
-//     transition_image_layout(device_, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-//                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, images[id]);
-//
-//
-//     //TODO: maybe put this elsewhere
-//     create_image_view(device_, images[id].vk_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT,
-//                       images[id].vk_image_view);
-//     create_image_sampler(device_, images[id].vk_sampler);
-//
-//     texture.desc = desc;
-//     texture.id = id;
-//     return true;
-// }
-//
-//
+    //Destroy old swapchain
+    destroy_swapchain(device_, swapchain_);
+    destroy_framebuffer(device_, framebuffer_);
+
+
+    if (!create_swapchain(device_, surface_khr_, window_, swapchain_)) return;
+    if (!create_framebuffer(device_, swapchain_, render_pass_, framebuffer_)) return;
+}
+
+void hive::vk::GraphicsDevice_Vulkan::handle_rendering_event(const Event &event)
+{
+    switch (event.type)
+    {
+        case EventType::FramebufferResized:
+            recreate_swap_chain();
+            break;
+        default:
+            LOG_DEBUG("Event of category Rendering is not supported on GraphicsDeviceVulkan");
+            break;
+    }
+}
+
+i32 hive::vk::GraphicsDevice_Vulkan::get_framebuffer_x() const
+{
+    return swapchain_.extent_2d.width;
+}
+
+i32 hive::vk::GraphicsDevice_Vulkan::get_framebuffer_y() const
+{
+    return swapchain_.extent_2d.height;
+}
+
+
 bool hive::vk::GraphicsDevice_Vulkan::BeginCmd()
 {
     vkWaitForFences(device_.logical_device, 1, &fence_in_flight_[current_frame_], VK_TRUE, UINT64_MAX);
-    vkResetFences(device_.logical_device, 1, &fence_in_flight_[current_frame_]);
 
     // processDestroyItems();
-    vkAcquireNextImageKHR(device_.logical_device, swapchain_.vk_swapchain, UINT64_MAX, sem_image_available_[current_frame_], VK_NULL_HANDLE, &image_index_);
+    VkResult result = vkAcquireNextImageKHR(device_.logical_device, swapchain_.vk_swapchain, UINT64_MAX, sem_image_available_[current_frame_], VK_NULL_HANDLE, &image_index_);
 
+    vkResetFences(device_.logical_device, 1, &fence_in_flight_[current_frame_]);
     vkResetCommandBuffer(command_buffers_[current_frame_], /*VkCommandBufferResetFlagBits*/ 0);
 
     VkCommandBufferBeginInfo beginInfo{};
@@ -388,44 +170,7 @@ bool hive::vk::GraphicsDevice_Vulkan::EndCmd() const
     }
     return true;
 }
-//
-// void hive::vk::GraphicsDevice_Vulkan::CmdBindPipeline(Pipeline &pipeline)
-// {
-//     auto& data = pipelines[pipeline.id];
-//     vkCmdBindPipeline(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, data.vk_pipeline);
-//     vkCmdBindDescriptorSets(command_buffers_[current_frame_], VK_PIPELINE_BIND_POINT_GRAPHICS, data.pipeline_layout, 0, 1, &data.descriptor_sets[current_frame_], 0, nullptr);
-//
-//     pipelines[pipeline.id].last_frame_used = current_frame_;
-// }
-//
-// void hive::vk::GraphicsDevice_Vulkan::CmdDrawIndexed(const Buffer vertex_buffer, const Buffer index_buffer, const u32 nbr_indices)
-// {
-//
-//     //TODO: remove viewport cmd
-//     VkViewport viewport{};
-//     viewport.x = 0.0f;
-//     viewport.y = 0.0f;
-//     viewport.width = (float) swapchain_.extent_2d.width;
-//     viewport.height = (float) swapchain_.extent_2d.height;
-//     viewport.minDepth = 0.0f;
-//     viewport.maxDepth = 1.0f;
-//     vkCmdSetViewport(command_buffers_[current_frame_], 0, 1, &viewport);
-//
-//
-//     //TODO: remove scissor cmd
-//     VkRect2D scissor{};
-//     scissor.offset = {0, 0};
-//     scissor.extent = swapchain_.extent_2d;
-//     vkCmdSetScissor(command_buffers_[current_frame_], 0, 1, &scissor);
-//
-//
-//     VkDeviceSize offsets[] = {0};
-//     vkCmdBindVertexBuffers(command_buffers_[current_frame_], 0, 1, &buffers[vertex_buffer.id].vk_buffer, offsets);
-//     vkCmdBindIndexBuffer(command_buffers_[current_frame_], buffers[index_buffer.id].vk_buffer, 0, VK_INDEX_TYPE_UINT32);
-//
-//     vkCmdDrawIndexed(command_buffers_[current_frame_], nbr_indices, 1, 0, 0, 0);
-// }
-//
+
 bool hive::vk::GraphicsDevice_Vulkan::SubmitFrame()
 {
     VkSubmitInfo submitInfo{};
@@ -475,9 +220,5 @@ void hive::vk::GraphicsDevice_Vulkan::WaitForGPU() const
     vkDeviceWaitIdle(device_.logical_device);
 }
 
-// void hive::vk::GraphicsDevice_Vulkan::DestroyTexture(hive::Texture &texture)
-// {
-//     destroy_image(device_, images[texture.id]);
-// }
 
 #endif

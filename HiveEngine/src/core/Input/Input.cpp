@@ -15,7 +15,8 @@ hive::Input::Input()
 {
     assert(g_Input == nullptr);
     g_Input = this;
-    IEventService::get_singleton()->Subscribe(std::bind(&Input::event_callback, this, std::placeholders::_1));
+    IEventService::get_singleton()->Subscribe(EventCategory::Input,
+                                              std::bind(&Input::event_callback, this, std::placeholders::_1));
 }
 
 hive::Input * hive::Input::get_singleton()
